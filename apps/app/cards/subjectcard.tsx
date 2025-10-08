@@ -2,10 +2,11 @@ import { View, Text, StyleSheet, Platform } from 'react-native';
 
 
 interface Props {
-    subShortCut : string,
-    subName : string
+    subShortCut: string,
+    subName: string
     ,
-    color : string
+    color: string,
+   
 }
 
 export default function SubjectCard(props: Props) {
@@ -27,11 +28,12 @@ const styles = StyleSheet.create({
         maxWidth: 200,
         padding: 6,
         borderRadius: 10,
+        margin: 10,
 
-  
+
         elevation: 8,
 
-  
+
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
@@ -40,13 +42,14 @@ const styles = StyleSheet.create({
     subjectContainer: {
         backgroundColor: "#E57373",
         height: 150,
+        width: 160,
         justifyContent: "center",
         alignItems: "center",
         maxWidth: 200,
         borderRadius: 10,
-        padding : 10,
+        padding: 10,
         marginTop: 10,
-        
+
         elevation: 8,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 4 },

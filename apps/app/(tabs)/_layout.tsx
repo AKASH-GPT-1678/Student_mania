@@ -27,7 +27,7 @@ export default function TabsLayout() {
                 }}
             />
             <Drawer.Screen
-                name="onboarding" // This is the name of the page and must match the url from root
+                name="onboarding" 
                 options={{
                     drawerLabel: 'User',
                     title: 'overview',
