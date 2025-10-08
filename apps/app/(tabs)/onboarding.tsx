@@ -3,7 +3,7 @@ import React from 'react'
 
 const OnBoardingPage = () => {
   return (
-    <View>
+    <View style={{backgroundColor : "white" , height : "100%"}}>
       <Text>OnBoardingPage</Text>
     </View>
   )

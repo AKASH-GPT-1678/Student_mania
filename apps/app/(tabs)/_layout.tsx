@@ -19,11 +19,19 @@ export default function TabsLayout() {
                 }}
             />
             <Drawer.Screen
+                name="subjects" 
+                options={{
+                    drawerLabel: 'Subjects',
+                    title: 'subjects',
+                    drawerActiveBackgroundColor: "white",
+                }}
+            />
+            <Drawer.Screen
                 name="onboarding" // This is the name of the page and must match the url from root
                 options={{
                     drawerLabel: 'User',
                     title: 'overview',
-                    headerShown: false
+                    drawerActiveBackgroundColor: "white",
                 }}
             />
         </Drawer>
