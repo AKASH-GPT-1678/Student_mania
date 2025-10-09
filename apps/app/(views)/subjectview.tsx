@@ -1,10 +1,10 @@
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react'
-import { StyleSheet, View, Text,FlatList } from 'react-native';
+import { StyleSheet, View, Text, FlatList } from 'react-native';
 import { TextInput } from 'react-native';
 import SafeScreenWrapper from '../wrapper/safescreenwrapper';
 import Feather from '@expo/vector-icons/Feather';
-import { subjectData } from '../tempdata/subject';
+import { subjectData2 } from '../tempdata/subject';
 
 const SubjectView = () => {
     const { id } = useLocalSearchParams();
@@ -16,15 +16,18 @@ const SubjectView = () => {
 
                 <View style={{ marginTop: 10 }}>
                     <FlatList
-                        data={subjectData}
+                        data={subjectData2}
+                        contentContainerStyle={styles.container}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => (
                             <View style={styles.card}>
-                                <Feather name="globe" size={80} color="black" style={styles.cardIcon} />
+                                <View style={styles.cardIcon}>
+                                    {item.icon}
+                                </View>
                                 <View style={styles.cardInfo}>
-                                    <Text style={styles.heading}>Saved Notes</Text>
+                                    <Text style={styles.heading}>{item.heading}</Text>
                                     <Text>
-                                        Would you like me to show how to pass this onClick from your FlatList → SubjectCard
+                                        {item.subject}
                                     </Text>
                                 </View>
                             </View>
@@ -47,11 +50,18 @@ const styles = StyleSheet.create({
 
         alignItems: "center",
         alignSelf: "center",
+        marginTop: 20,
 
         width: "90%",
         borderColor: "grey",
         borderWidth: 4,
         borderRadius: 30
+    },
+    container: {
+        marginTop: 30,
+        gap: 16,
+        paddingHorizontal: 10
+
     },
     card: {
         display: "flex",
@@ -59,6 +69,9 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         width: "100%",
         padding: 16,
+        minHeight: 120,
+        paddingHorizontal: 20,
+        backgroundColor: "#F2F2F2",
         alignItems: "center"
     },
     cardIcon: {
