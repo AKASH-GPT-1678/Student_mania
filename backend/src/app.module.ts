@@ -6,7 +6,8 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Resolver, Query } from '@nestjs/graphql';
 import { SubjectModule } from './subject/subject.module';
 import { PrismaService } from 'prisma/prisma.service';
-
+import { JwtService } from '@nestjs/jwt';
+import { AuthModule } from './auth/auth.module';
 @Resolver()
 class HelloResolver {
   @Query(() => String)
@@ -16,7 +17,9 @@ class HelloResolver {
 }
 
 @Module({
+  
   imports: [
+    AuthModule,
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -27,6 +30,6 @@ class HelloResolver {
     SubjectModule,
   ],
   controllers: [AppController],
-  providers: [AppService, HelloResolver,PrismaService],
+  providers: [AppService, HelloResolver,PrismaService,JwtService],
 })
 export class AppModule { }
