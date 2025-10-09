@@ -4,7 +4,9 @@ import { AppService } from './app.service';
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Resolver, Query } from '@nestjs/graphql';
-// Add a resolver with a Query
+import { SubjectModule } from './subject/subject.module';
+import { PrismaService } from 'prisma/prisma.service';
+
 @Resolver()
 class HelloResolver {
   @Query(() => String)
@@ -21,8 +23,10 @@ class HelloResolver {
       playground: true,
       autoSchemaFile: true, // auto-generat
     }),
+
+    SubjectModule,
   ],
   controllers: [AppController],
-  providers: [AppService, HelloResolver],
+  providers: [AppService, HelloResolver,PrismaService],
 })
 export class AppModule { }
