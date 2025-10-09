@@ -39,7 +39,9 @@ export default function TabsLayout() {
                     drawerLabel: 'Attendance',
                     title: 'Attendance',
                     drawerActiveBackgroundColor: "white",
+                 
                 }}
+               
             />
         </Drawer>
 

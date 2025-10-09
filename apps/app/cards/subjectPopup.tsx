@@ -3,15 +3,29 @@ import React from 'react';
 import { TextInput } from 'react-native-gesture-handler';
 import Button from '../utils/button';
 import Entypo from '@expo/vector-icons/Entypo';
+import axios from 'axios';
+import { router } from 'expo-router';
 interface Props {
     onPress: () => void
  }
 const SubjectPopup = ({ onPress }: Props) => {
+    const [subject, setSubject] = React.useState("");
+
+
+
+    const handleAddSubject = async () => { 
+        try {
+            const response = await axios
+            
+        } catch (error) {
+            
+        }
+    };
     return (
         <View style={styles.container}>
             <Entypo name="cross" size={30} color="red" style={{ alignSelf: "flex-end" }} onPress={onPress} />
-            <TextInput placeholder='Search' style={styles.input} />
-            <Button title='Add Subject' onPress={() => { }} />
+            <TextInput placeholder='Search' style={styles.input} onChangeText={(text) => setSubject(text)} />
+            <Button title='Add Subject' onPress={() => router.push('/signin')} width={120}/>
 
 
         </View>
