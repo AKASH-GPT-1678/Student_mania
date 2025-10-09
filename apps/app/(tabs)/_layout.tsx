@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import { Drawer } from 'expo-router/drawer';
-import SafeScreenWrapper from "../wrapper/safescreenwrapper";
+
 export default function TabsLayout() {
     return (
 
@@ -31,6 +31,13 @@ export default function TabsLayout() {
                 options={{
                     drawerLabel: 'User',
                     title: 'overview',
+                    drawerActiveBackgroundColor: "white",
+                }}
+            /> <Drawer.Screen
+                name="attendance" 
+                options={{
+                    drawerLabel: 'Attendance',
+                    title: 'Attendance',
                     drawerActiveBackgroundColor: "white",
                 }}
             />
