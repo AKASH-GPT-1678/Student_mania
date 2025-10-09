@@ -7,6 +7,8 @@ import { useSignIn, useSignUp } from '@clerk/clerk-expo';
 import * as WebBrowser from "expo-web-browser";
 import { useOAuth } from "@clerk/clerk-expo";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import AntDesign from '@expo/vector-icons/AntDesign';
+
 import axios from 'axios';
 // import { login, setToken } from './store/slice/userSlice';
 import { useDispatch } from 'react-redux';
@@ -17,6 +19,7 @@ const SignInn = () => {
     const facebookAuth = useOAuth({ strategy: "oauth_facebook" });
     const [email, setEmail] = React.useState("");       // state for email
     const [password, setPassword] = React.useState(""); // state for password
+    const [showPassword, setShowPassword] = React.useState(false);
 
     const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
     const dispatch = useDispatch();
@@ -36,8 +39,8 @@ const SignInn = () => {
     };
 
     const handleManualSignIn = async () => {
-     
-        console.log(email , password)
+
+        console.log(email, password)
         if (!BASE_URL) return { success: false, message: "BASE_URL is not defined" };
         if (!email || !password)
             return { success: false, message: "Email and password are required" };
@@ -45,12 +48,12 @@ const SignInn = () => {
         try {
             const response = await axios.post(`${BASE_URL}/api/auth/login`, {
                 "email": email.toString(),
-                "password" : password.toString()
+                "password": password.toString()
             }, {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                
+
             });
             console.log(response.data)
 
@@ -84,10 +87,11 @@ const SignInn = () => {
                 />
                 <Text style={styles.header}>BookBaazar</Text>
 
+
                 <View style={styles.view1}>
                     <Text style={styles.loginTitle}>Login to your Account</Text>
 
-                 
+
                     <View style={styles.inputContainer}>
                         <Text style={styles.label}>Email</Text>
                         <TextInput
@@ -102,17 +106,22 @@ const SignInn = () => {
                         />
                     </View>
 
-               
-                    <View style={styles.inputContainer}>
+
+                    <View style={styles.passwordContainer}>
                         <Text style={styles.label}>Password</Text>
                         <TextInput
                             style={styles.textInput}
                             placeholder="Enter your password"
                             placeholderTextColor="#A1A1A1"
-                            secureTextEntry={true}
+                            secureTextEntry={showPassword ? false : true}
                             autoCapitalize="none"
                             onChangeText={(text) => setPassword(text)}
+
                         />
+                        <View style={styles.eyeIcons}>
+                            {showPassword ? <AntDesign name="eye-invisible" size={24} color="black" onPress={() => setShowPassword(false)} /> :
+                                <AntDesign name="eye" size={24} color="black" onPress={() => setShowPassword(true)} />}
+                        </View>
                     </View>
 
                     <View style={styles.buttonContainer}>
@@ -218,6 +227,10 @@ const styles = StyleSheet.create({
     inputContainer: {
         marginBottom: 20,
     },
+    passwordContainer: {
+        marginBottom: 20,
+        position: 'relative',
+    },
     label: {
         fontSize: 16,
         fontWeight: '500',
@@ -237,6 +250,11 @@ const styles = StyleSheet.create({
     buttonContainer: {
         marginTop: 28,
         alignItems: "center",
+    },
+    eyeIcons: {
+        position: 'absolute',
+        top: 40,
+        right: 16,
     },
     loginButton: {
         backgroundColor: "#007AFF",

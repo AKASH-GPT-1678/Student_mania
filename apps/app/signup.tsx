@@ -6,6 +6,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import axios from 'axios';
 import { useOAuth } from "@clerk/clerk-expo";
+import AntDesign from '@expo/vector-icons/AntDesign';
+
 const SignUp = () => {
     const googleOAuth = useOAuth({ strategy: "oauth_google" });
     const githubAuth = useOAuth({ strategy: "oauth_github" });
@@ -13,6 +15,7 @@ const SignUp = () => {
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
     const [confirmPassword, setConfirmPassword] = React.useState<string>("");
+    const [showPassword, setShowPassword] = React.useState<boolean>(false);
     const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
     const [emptyError, setemptyError] = React.useState<boolean>()
@@ -95,30 +98,38 @@ const SignUp = () => {
                         />
                     </View>
 
-            
-                    <View style={styles.inputContainer}>
+
+                    <View style={styles.passwordContainer}>
                         <Text style={styles.label}>Password</Text>
                         <TextInput
                             style={styles.textInput}
                             placeholder="Enter your password"
                             placeholderTextColor="#A1A1A1"
-                            secureTextEntry={true}
+                            secureTextEntry={showPassword ? false : true}
                             autoCapitalize="none"
                             onChangeText={(text) => setPassword(text)}
                         />
+                        <View style={styles.eyeIcons}>
+                            {showPassword ? <AntDesign name="eye-invisible" size={24} color="black" onPress={() => setShowPassword(false)} /> :
+                                <AntDesign name="eye" size={24} color="black" onPress={() => setShowPassword(true)} />}
+                        </View>
                     </View>
 
 
-                    <View style={styles.inputContainer}>
+                    <View style={styles.passwordContainer}>
                         <Text style={styles.label}>Confirm Password</Text>
                         <TextInput
                             style={styles.textInput}
                             placeholder="Confirm your password"
                             placeholderTextColor="#A1A1A1"
-                            secureTextEntry={true}
+                            secureTextEntry={showPassword ? false : true}
                             autoCapitalize="none"
                             onChangeText={(text) => setConfirmPassword(text)}
                         />
+                        <View style={styles.eyeIcons}>
+                            {showPassword ? <AntDesign name="eye-invisible" size={24} color="black" onPress={() => setShowPassword(false)} /> :
+                                <AntDesign name="eye" size={24} color="black" onPress={() => setShowPassword(true)} />}
+                        </View>
                     </View>
 
 
@@ -208,6 +219,11 @@ const styles = StyleSheet.create({
         width: "100%",
         maxWidth: 400,
     },
+        eyeIcons: {
+        position: 'absolute',
+        top: 40,
+        right: 16,
+    },
     loginTitle: {
         fontSize: 24,
         fontWeight: '600',
@@ -223,6 +239,10 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#333333',
         marginBottom: 10,
+    },
+    passwordContainer: {
+        marginBottom: 20,
+        position: 'relative',
     },
     textInput: {
         borderWidth: 1,
