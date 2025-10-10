@@ -8,10 +8,12 @@ import * as WebBrowser from "expo-web-browser";
 import { useOAuth } from "@clerk/clerk-expo";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useAppDispatch } from './redux/reduxhooks';
 
 import axios from 'axios';
 // import { login, setToken } from './store/slice/userSlice';
 import { useDispatch } from 'react-redux';
+import { login } from './redux/userSlice';
 WebBrowser.maybeCompleteAuthSession();
 const SignInn = () => {
     const googleOAuth = useOAuth({ strategy: "oauth_google" });
@@ -60,8 +62,8 @@ const SignInn = () => {
 
             if (response?.data?.success) {
                 Alert.alert("Sucessfull SigniN ");
-                // dispatch(setToken(response.data.access_token));
-                // dispatch(login());
+                dispatch(login({ id: response.data.id, token: response.data.access_token }));
+                
                 return { success: true, data: response.data };
             } else {
                 return { success: false, message: response?.data?.message || "Login failed" };

@@ -1,31 +1,62 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Alert } from 'react-native';
 import React from 'react';
 import { TextInput } from 'react-native-gesture-handler';
 import Button from '../utils/button';
 import Entypo from '@expo/vector-icons/Entypo';
 import axios from 'axios';
 import { router } from 'expo-router';
+import { ENV } from '../utils/ENV';
+import { useAppSelector } from '../redux/reduxhooks';
 interface Props {
     onPress: () => void
- }
+}
 const SubjectPopup = ({ onPress }: Props) => {
     const [subject, setSubject] = React.useState("");
+    const token = useAppSelector((state) => state.user.token);
 
 
-
-    const handleAddSubject = async () => { 
+    const handleAddSubject = async () => {
+        if (!subject) return Alert.alert("Error", "Please enter a subject name!");
         try {
-            const response = await axios
-            
-        } catch (error) {
-            
+
+            const subjectData = {
+                name: subject,
+
+            };
+
+
+            const response = await axios.post(
+                `${ENV.BASE_URL}/api/subject/create`,
+                subjectData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+
+            if (response.status === 201 || response.status === 200) {
+                Alert.alert("Success", "Subject added successfully!");
+                console.log("Response:", response.data);
+            }
+        } catch (error: any) {
+            const message =
+                error?.response?.data?.message ||
+                error.message ||
+                "Something went wrong!";
+
+            console.error(message);
+            Alert.alert("Error", message);
         }
+
     };
     return (
         <View style={styles.container}>
             <Entypo name="cross" size={30} color="red" style={{ alignSelf: "flex-end" }} onPress={onPress} />
             <TextInput placeholder='Search' style={styles.input} onChangeText={(text) => setSubject(text)} />
-            <Button title='Add Subject' onPress={() => router.push('/signin')} width={120}/>
+            <Button title='Add Subject' onPress={handleAddSubject} width={120} />
 
 
         </View>

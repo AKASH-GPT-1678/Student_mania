@@ -90,6 +90,8 @@ export class AuthService {
             const response = new RegisterResponseDto();
             response.name = user.name;
             response.email = user.email;
+            response.id = user.id;
+           
           
             response.success = true;
             response.message = 'Login successful';
