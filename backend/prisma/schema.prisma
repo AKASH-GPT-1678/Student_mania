@@ -50,7 +50,7 @@ model Brand {
   verified      Boolean  @default(false)
   active        Boolean  @default(true)
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime? @updatedAt
   advertisements Advertisement[]
 }
 

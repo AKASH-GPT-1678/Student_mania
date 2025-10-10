@@ -8,6 +8,7 @@ import { SubjectModule } from './subject/subject.module';
 import { PrismaService } from 'prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
+import { BrandsModule } from './brands/brands.module';
 
 @Resolver()
 class HelloResolver {
@@ -29,6 +30,8 @@ class HelloResolver {
     }),
 
     SubjectModule,
+
+    BrandsModule,
 
   ],
   controllers: [AppController],
