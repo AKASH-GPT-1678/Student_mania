@@ -63,7 +63,7 @@ const SignInn = () => {
             if (response?.data?.success) {
                 Alert.alert("Sucessfull SigniN ");
                 dispatch(login({ id: response.data.id, token: response.data.access_token }));
-                
+
                 return { success: true, data: response.data };
             } else {
                 return { success: false, message: response?.data?.message || "Login failed" };
@@ -136,7 +136,7 @@ const SignInn = () => {
                     </View>
 
 
-                    {/* Forgot Password */}
+
                     <View style={styles.forgotPasswordContainer}>
                         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                     </View>
@@ -189,6 +189,15 @@ const SignInn = () => {
 
                 </View>
 
+                <View style={styles.brand}>
+                    <Text className='font-bold text-blue-600' onPress={
+                        () =>
+                            router.push("/(zbrand)/brandsign")
+                    }>Brand SignIn</Text>
+
+                </View>
+
+
 
             </View>
         </SafeAreaView>
@@ -201,6 +210,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#FFFFFF",
+        height: "100%",
+        position: "relative"
     },
     sidedisplay: {
         flex: 1,
@@ -252,6 +263,20 @@ const styles = StyleSheet.create({
     buttonContainer: {
         marginTop: 28,
         alignItems: "center",
+    },
+    brand: {
+        position: 'absolute',
+
+
+        bottom: 10
+
+    },
+    brandText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: 'blue',
+        textAlign: 'center',
+        marginBottom: 32,
     },
     eyeIcons: {
         position: 'absolute',
