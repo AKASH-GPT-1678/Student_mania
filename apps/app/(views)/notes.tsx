@@ -1,14 +1,33 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react';
+import { TextInput, View, StyleSheet } from 'react-native';
 
-const NotesView = () => {
+export default function MyTextArea() {
+  const [text, setText] = useState('');
+
   return (
-    <View>
-      <Text>NotesView</Text>
+    <View style={styles.container}>
+      <TextInput
+        style={styles.textArea}
+        placeholder="Write something here..."
+        multiline
+        numberOfLines={28}
+        value={text}
+        onChangeText={setText}
+      />
     </View>
-  )
+  );
 }
 
-export default NotesView
-
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+  },
+  textArea: {
+    height: 150,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    padding: 10,
+    textAlignVertical: 'top', // keeps text at top-left corner
+    borderRadius: 10,
+  },
+});

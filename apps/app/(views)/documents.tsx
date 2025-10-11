@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Platform ,Alert } from 'react-native';
+import { StyleSheet, Text, View, Platform, Alert } from 'react-native';
 import Button from '../utils/button';
 import React from 'react';
 import SafeScreenWrapper from '../wrapper/safescreenwrapper';
@@ -89,7 +89,7 @@ const Documents = () => {
             {upload && <View style={styles.container}>
                 <Text style={styles.title}>Upload Documents</Text>
 
-                <Button title="Pick Document" onPress={pickDocument} width={120}/>
+                <Button title="Pick Document" onPress={pickDocument} width={120} />
 
                 {file && <Text style={styles.fileName}>Selected: {file.name}</Text>}
 
@@ -105,7 +105,7 @@ const Documents = () => {
 
             <View style={{ marginTop: 20, flex: 1 }}>
                 <Button title='Upload' onPress={() => { }} width={120} >
-                    </Button>
+                </Button>
 
             </View>
         </View>
