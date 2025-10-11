@@ -38,7 +38,8 @@ model Subject {
 model Brand {
   id             String          @id @default(uuid())
   name           String
-  brandcode      String          @unique
+  email          String          @unique
+  brandcode      String?         @unique
   brandPassword  String?
   contactNumber  String?
   website        String?

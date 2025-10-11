@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException, UnauthorizedException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { LoginBrandDto } from './dto/create-brand.dto';
+import { LoginBrandDto } from './dto/login-brand.dto';
 import { JwtService } from '@nestjs/jwt';
 import { CreateAdvertisementDto } from './dto/create-advertisement.dto';
 import { NotValidCloudProvider } from 'src/errors/not-valid.url';
-
+import { CreateBrandDto } from './dto/create-brand.dto';
+import crypto from 'crypto';
 @Injectable()
 export class BrandsService {
   constructor(
@@ -29,14 +30,14 @@ export class BrandsService {
         throw new NotFoundException("Brand not found with the given ID.");
       }
 
-   
+
       if (!allowedPrefixes.some(prefix => createAds.imageUrl?.startsWith(prefix))) {
         throw new NotValidCloudProvider(
           "Invalid cloud provider. Only Google, AWS, or Cloudinary are supported for images."
         );
       }
 
-   
+
       const advertisement = await this.prisma.advertisement.create({
         data: {
           ...createAds,
@@ -47,13 +48,99 @@ export class BrandsService {
       return advertisement;
 
     } catch (error) {
-     
+
       if (error instanceof NotFoundException || error instanceof NotValidCloudProvider) {
         throw error;
       }
       console.error("Error creating advertisement:", error);
       throw new InternalServerErrorException("Failed to create advertisement.");
     }
+  };
+
+
+async signUpBrand(createBrand: CreateBrandDto) {
+  try {
+    let isVerified = false;
+
+
+    if (createBrand.website) {
+      isVerified = await BrandsService.testWebsite(createBrand.website);
+      if (!isVerified) {
+   
+        throw new BadRequestException('Website is not valid or reachable');
+      }
+    }
+
+
+    const { brandCode, rawPassword } =
+      await this.generateBrandCodeAndPassword(createBrand);
+
+
+    const brand = await this.prisma.brand.create({
+      data: {
+        name: createBrand.name,
+        email: createBrand.email,
+        contactNumber: createBrand.contactNumber,
+        category: createBrand.category,
+        website: createBrand.website,
+        logoUrl: createBrand.logoUrl,
+        description: createBrand.description,
+        brandcode: brandCode,
+        brandPassword: rawPassword, 
+        sublocation: createBrand.sublocation,
+        location: createBrand.location,
+        verified: isVerified,
+        active: true,
+      },
+    });
+
+    // Return the brand + raw password to show once
+    return { brand, rawPassword };
+  } catch (error) {
+    // Handle errors and return readable message
+    if (error instanceof BadRequestException) {
+      throw error;
+    }
+    console.error(error);
+    throw new InternalServerErrorException('Failed to create brand');
+  }
+}
+
+  static async testWebsite(webUrl: string) {
+
+    try {
+      const response = await fetch(webUrl);
+      console.log(response);
+      if (response.status === 200) {
+        console.log("Website is up and running");
+        return true;
+      }
+      else {
+        console.log("Website is down");
+        return false;
+      }
+
+    } catch (error) {
+      console.error("Error testing website:", error);
+      return false;
+
+    }
+  }
+
+
+  async generateBrandCodeAndPassword(createBrand: CreateBrandDto) {
+    const brandCode = createBrand.name
+      .slice(0, 3)
+      .toUpperCase() + '-' + crypto.randomBytes(3).toString('hex');
+
+    const rawPassword = crypto.randomBytes(6).toString('hex');
+
+
+    return {
+      brandCode,
+      rawPassword,
+
+    };
   }
 
 
@@ -61,14 +148,14 @@ export class BrandsService {
     try {
       const { code, password } = loginDto;
 
-  
+
       if (!code || !password) {
         throw new BadRequestException('Email and password are required');
       }
 
 
       const findBrand = await this.prisma.brand.findUnique({
-        where: { brandcode : code},
+        where: { brandcode: code },
       });
 
       if (!findBrand) {
@@ -98,7 +185,7 @@ export class BrandsService {
       console.error('Error during brand sign-in:', error);
       throw new InternalServerErrorException('Something went wrong during sign-in');
     }
-  }
+  };
 
   async generateToken(user: any) {
     const payload = { email: user.email, sub: user.id };

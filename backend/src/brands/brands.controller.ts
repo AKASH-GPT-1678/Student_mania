@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus,UseGuards , Req } from '@nestjs/common';
 import { BrandsService } from './brands.service';
 
-import { LoginBrandDto } from './dto/create-brand.dto';
+import { LoginBrandDto } from './dto/login-brand.dto';
 import { CreateAdvertisementDto } from './dto/create-advertisement.dto';
 import { JwtGuard } from 'src/jwt/jwt.guard';
 @Controller('api/brands')
