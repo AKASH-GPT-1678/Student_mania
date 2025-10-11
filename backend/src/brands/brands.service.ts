@@ -20,7 +20,7 @@ export class BrandsService {
     const allowedPrefixes = [google, cloudinary, aws1];
 
     try {
-      // 1️⃣ Check if brand exists
+
       const brand = await this.prisma.brand.findUnique({
         where: { id: createAds.brandId },
       });
@@ -47,11 +47,10 @@ export class BrandsService {
       return advertisement;
 
     } catch (error) {
-      // Handle known and unknown errors
+     
       if (error instanceof NotFoundException || error instanceof NotValidCloudProvider) {
-        throw error; // rethrow known errors
+        throw error;
       }
-      // Log unknown errors and throw generic message
       console.error("Error creating advertisement:", error);
       throw new InternalServerErrorException("Failed to create advertisement.");
     }
@@ -60,16 +59,16 @@ export class BrandsService {
 
   async signInBrand(loginDto: LoginBrandDto) {
     try {
-      const { email, password } = loginDto;
+      const { code, password } = loginDto;
 
-      // ✅ Step 1: Basic field checks
-      if (!email || !password) {
+  
+      if (!code || !password) {
         throw new BadRequestException('Email and password are required');
       }
 
 
       const findBrand = await this.prisma.brand.findUnique({
-        where: { email },
+        where: { brandcode : code},
       });
 
       if (!findBrand) {

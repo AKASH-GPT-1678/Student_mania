@@ -75,6 +75,12 @@ const SignInn = () => {
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </View>
         </View>
+
+
+        <Text style={styles.webiste}>
+          If you don't have brand code then visit website www.theakashgupta.com to register 
+
+        </Text>
       </View>
     </SafeAreaView>
   );
@@ -104,6 +110,14 @@ const styles = StyleSheet.create({
   view1: {
     width: "100%",
     maxWidth: 400,
+  },
+  webiste : {
+    fontSize: 16,
+    fontWeight: '500',
+    maxWidth : 250,
+    color: '#333333',
+    marginBottom: 10,
+    
   },
   loginTitle: {
     fontSize: 24,

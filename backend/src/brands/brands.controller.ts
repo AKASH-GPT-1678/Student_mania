@@ -20,7 +20,7 @@ export class BrandsController {
   @HttpCode(HttpStatus.CREATED)
   async createAdvertisement(
     @Body() createAds: CreateAdvertisementDto,
-    @Req() req: any, // req.user will contain decoded JWT info
+    @Req() req: any,
   ) {
  
     const id = req.user.sub;
