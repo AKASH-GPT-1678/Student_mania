@@ -1,4 +1,3 @@
-
 import './App.css'
 import BrandForm from './components/BrandSignup'
 

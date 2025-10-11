@@ -25,7 +25,7 @@ const Subjects = () => {
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => router.push({
-              pathname: "/(views)/subjectview",
+              pathname: "/(views)",
               params: { id: item.subName }
             })}
 

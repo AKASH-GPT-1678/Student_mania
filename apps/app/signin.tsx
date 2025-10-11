@@ -11,7 +11,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useAppDispatch } from './redux/reduxhooks';
 
 import axios from 'axios';
-// import { login, setToken } from './store/slice/userSlice';
+
 import { useDispatch } from 'react-redux';
 import { login } from './redux/userSlice';
 WebBrowser.maybeCompleteAuthSession();

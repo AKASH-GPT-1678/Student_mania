@@ -1,6 +1,6 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react'
-import { StyleSheet, View, Text, FlatList } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { TextInput } from 'react-native';
 import SafeScreenWrapper from '../wrapper/safescreenwrapper';
 import Feather from '@expo/vector-icons/Feather';
@@ -20,24 +20,36 @@ const SubjectView = () => {
                         contentContainerStyle={styles.container}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => (
-                            <View style={styles.card}>
-                                <View style={styles.cardIcon}>
-                                    {item.icon}
+                            <TouchableOpacity
+                                onPress={() =>
+                                    router.push({
+                                        pathname: item.route as any,
+
+                                    }
+                                    )
+                                }
+
+
+                            >
+                                <View style={styles.card}>
+                                    <View style={styles.cardIcon}>
+                                        {item.icon}
+                                    </View>
+                                    <View style={styles.cardInfo}>
+                                        <Text style={styles.heading}>{item.heading}</Text>
+                                        <Text>
+                                            {item.subject}
+                                        </Text>
+                                    </View>
                                 </View>
-                                <View style={styles.cardInfo}>
-                                    <Text style={styles.heading}>{item.heading}</Text>
-                                    <Text>
-                                        {item.subject}
-                                    </Text>
-                                </View>
-                            </View>
+                            </TouchableOpacity>
                         )}
                     />
                 </View>
 
 
             </View>
-        </SafeScreenWrapper>
+        </SafeScreenWrapper >
     )
 }
 
