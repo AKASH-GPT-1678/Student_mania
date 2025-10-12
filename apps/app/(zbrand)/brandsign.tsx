@@ -77,7 +77,7 @@ const SignInn = () => {
         </View>
 
 
-        <Text style={styles.webiste}>
+        <Text style={styles.website}>
           If you don't have brand code then visit website www.theakashgupta.com to register 
 
         </Text>
@@ -111,14 +111,18 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 400,
   },
-  webiste : {
-    fontSize: 16,
-    fontWeight: '500',
-    maxWidth : 250,
-    color: '#333333',
-    marginBottom: 10,
-    
-  },
+ website: {
+  position: 'absolute',
+  bottom: 20,              
+  left: 0,
+  right: 0,
+  textAlign: 'center',
+  fontSize: 16,
+  fontWeight: '500',
+  color: '#333333',
+  paddingHorizontal: 20,  
+},
+
   loginTitle: {
     fontSize: 24,
     fontWeight: '600',

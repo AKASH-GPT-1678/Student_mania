@@ -31,6 +31,9 @@ export default function BrandForm() {
       data);
 
       console.log(response.data);
+      if(response.data.success == true) {
+        window.location.href = `/verify?email=${data.email}`;
+      }
 
     reset();
   };

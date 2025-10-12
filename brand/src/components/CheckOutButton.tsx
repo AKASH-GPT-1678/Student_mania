@@ -1,10 +1,18 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { createOrderId } from "./createOrder";
+import { BrandContext } from "./context/brandContext.";
 
-export default function CheckoutButton() {
+
+interface Props { 
+    email?: string
+}
+
+export default function CheckoutButton({ email }: Props) {
     const [loading, setLoading] = useState(false);
-    const [price, setPrice] = useState(10);
+    const [price, setPrice] = useState(5);
+    const {setIs_Brand, setBrandCode , setBrandPassword} = React.useContext(BrandContext);
+
 
     // Dynamically load Razorpay SDK
     const loadRazorpay = (): Promise<boolean> => {
@@ -53,11 +61,15 @@ export default function CheckoutButton() {
                                 razorpay_order_id: response.razorpay_order_id,
                                 razorpay_payment_id: response.razorpay_payment_id,
                                 razorpay_signature: response.razorpay_signature,
+                                email : email
                             }
                         );
 
-                        alert("Payment Successful!");
+                      
                         console.log("Verification Response:", paymentResponse.data);
+                        setIs_Brand(true);
+                        setBrandCode(paymentResponse.data.data.brandCode);
+                        setBrandPassword(paymentResponse.data.data.brandPassword);
                     } catch (err) {
                         alert("Payment verification failed. Please contact support.");
                         console.error(err);
