@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export async function createOrderId(amount: number, currency: string) {
+export async function createOrderId(amount: number) {
     const endpoint = import.meta.env.VITE_API_URL;
     try {
         const response = await axios.post(`${endpoint}/payment/create-order`, {

@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus,UseGuards , Req } from '@nestjs/common';
 import { BrandsService } from './brands.service';
-
+import { CreateBrandDto } from './dto/create-brand.dto';
 import { LoginBrandDto } from './dto/login-brand.dto';
 import { CreateAdvertisementDto } from './dto/create-advertisement.dto';
 import { JwtGuard } from 'src/jwt/jwt.guard';
@@ -27,6 +27,12 @@ export class BrandsController {
     createAds.brandId = id;
 
     return this.brandsService.createAdvertiseMent(createAds);
+  }
+
+  @Post('create-brand')
+  @HttpCode(HttpStatus.CREATED)
+  async signUpBrand(@Body() createBrand: CreateBrandDto) {
+    return await this.brandsService.signUpBrand(createBrand);
   }
 
 

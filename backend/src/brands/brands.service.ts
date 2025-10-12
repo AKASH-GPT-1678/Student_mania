@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateAdvertisementDto } from './dto/create-advertisement.dto';
 import { NotValidCloudProvider } from 'src/errors/not-valid.url';
 import { CreateBrandDto } from './dto/create-brand.dto';
-import crypto from 'crypto';
+import * as crypto from "crypto";
 @Injectable()
 export class BrandsService {
   constructor(
@@ -76,7 +76,7 @@ async signUpBrand(createBrand: CreateBrandDto) {
       await this.generateBrandCodeAndPassword(createBrand);
 
 
-    const brand = await this.prisma.brand.create({
+   const brand =  await this.prisma.brand.create({
       data: {
         name: createBrand.name,
         email: createBrand.email,
@@ -89,13 +89,13 @@ async signUpBrand(createBrand: CreateBrandDto) {
         brandPassword: rawPassword, 
         sublocation: createBrand.sublocation,
         location: createBrand.location,
-        verified: isVerified,
-        active: true,
+        verified: false,
+        active: isVerified,
       },
     });
 
-    // Return the brand + raw password to show once
-    return { brand, rawPassword };
+   
+    return {success : true, message : "Brand created successfully" };
   } catch (error) {
     // Handle errors and return readable message
     if (error instanceof BadRequestException) {

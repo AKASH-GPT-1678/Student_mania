@@ -1,8 +1,9 @@
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { brandSchema } from "../schemas/branform";
 import type { BrandFormData } from "../schemas/branform";
-
+import axios from "axios";
+import { Link } from "react-router-dom";
 export default function BrandForm() {
   const {
     register,
@@ -24,8 +25,13 @@ export default function BrandForm() {
     },
   });
 
-  const onSubmit = (data: BrandFormData) => {
-    console.log("✅ Submitted Brand Data:", data);
+  const onSubmit: SubmitHandler<BrandFormData> = async (data: BrandFormData) => {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/brands/create-brand`,
+      data);
+
+      console.log(response.data);
+
     reset();
   };
 
@@ -39,6 +45,9 @@ export default function BrandForm() {
             </h2>
             <p className="text-gray-600 text-center mt-2">
               Fill in the details to register your brand
+            </p>
+             <p className="text-gray-600 text-center mt-2">
+              Register your brand to get code and password
             </p>
           </div>
 
@@ -127,7 +136,7 @@ export default function BrandForm() {
               </div>
             </div>
 
-           
+
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Description <span className="text-gray-400 text-xs">(optional)</span>
@@ -200,13 +209,21 @@ export default function BrandForm() {
               </div>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               Create Brand
             </button>
+            <Link to={"/verify"}>
+              <button
+          
+            
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              Get My Code and Password 
+            </button>
+            </Link>
           </form>
         </div>
       </div>
