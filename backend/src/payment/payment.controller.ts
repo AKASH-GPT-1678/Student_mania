@@ -3,6 +3,7 @@ import { PaymentService } from './payment.service';
 import { Post, Body } from '@nestjs/common';
 import { RazorpayOrder } from './dto/order..dto';
 import { RazorpayPaymentDetails } from './payment.service';
+import { retry } from 'rxjs';
 @Controller('payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) { }
@@ -17,6 +18,7 @@ export class PaymentController {
     try {
       
       const payment = await this.paymentService.verifyPayment(order);
+      return payment;
     } catch (error) {
       
     }

@@ -1,5 +1,6 @@
 import './App.css'
 import BrandForm from './components/BrandSignup'
+import CheckoutButton from './components/CheckOutButton'
 
 function App() {
  
@@ -7,7 +8,8 @@ function App() {
   return (
     <>
     <div className='w-full'>
-    <BrandForm/>
+    {/* <BrandForm/> */}
+    <CheckoutButton/>
     </div>
      
     </>

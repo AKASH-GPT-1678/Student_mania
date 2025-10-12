@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import crypto from 'crypto';
+import * as crypto from 'crypto';
+
 //@ts-ignore
 import * as Razorpay from 'razorpay';
 
@@ -30,7 +31,7 @@ export class PaymentService {
 
     try {
       const options = {
-        amount: Number(amount) * 100, // Convert to smallest unit (paise)
+        amount: Number(amount) , // Convert to smallest unit (paise)
         currency: 'INR',
         receipt: 'receipt_' + Math.random().toString(36).substring(7),
       };
@@ -43,11 +44,10 @@ export class PaymentService {
     }
   }
 
-  /**
-   * Verifies a payment by comparing Razorpay signature.
-   */
   async verifyPayment(order: RazorpayPaymentDetails) {
     const secret = process.env.RAZORPAY_SECRET_KEY;
+    console.log(secret);
+    console.log(order);
 
     if (!secret) {
       throw new InternalServerErrorException('Razorpay secret key missing');
@@ -57,6 +57,7 @@ export class PaymentService {
       const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = order;
 
       const sign = razorpay_order_id + '|' + razorpay_payment_id;
+      console.log(sign);
       const expectedSign = crypto
         .createHmac('sha256', secret)
         .update(sign)
