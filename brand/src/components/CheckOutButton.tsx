@@ -1,4 +1,3 @@
-"use client";
 import { useState } from "react";
 import axios from "axios";
 import { createOrderId } from "./createOrder";
@@ -87,6 +86,7 @@ export default function CheckoutButton() {
 
         setLoading(false);
     };
+    
 
     return (
         <div className="flex flex-col items-center mt-10">
@@ -97,7 +97,11 @@ export default function CheckoutButton() {
                 disabled={loading}
             >
                 {loading ? "Processing..." : "Make Payment"}
+
+
             </button>
+
+            <input type="text" name="" id="" className="hidden" onChange={()=> setPrice(10)} />
         </div>
     );
 }
