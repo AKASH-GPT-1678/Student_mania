@@ -9,6 +9,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { BrandsModule } from './brands/brands.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Resolver()
 class HelloResolver {
@@ -19,7 +20,7 @@ class HelloResolver {
 }
 
 @Module({
-  
+
   imports: [
     AuthModule,
 
@@ -33,8 +34,10 @@ class HelloResolver {
 
     BrandsModule,
 
+    PaymentModule,
+
   ],
   controllers: [AppController],
-  providers: [AppService, HelloResolver,PrismaService,JwtService],
+  providers: [AppService, HelloResolver, PrismaService, JwtService],
 })
 export class AppModule { }

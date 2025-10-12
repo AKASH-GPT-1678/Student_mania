@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { TextInput, View, StyleSheet } from 'react-native';
+import SafeScreenWrapper from '../wrapper/safescreenwrapper';
 
 export default function MyTextArea() {
   const [text, setText] = useState('');
 
   return (
+    <SafeScreenWrapper>
     <View style={styles.container}>
       <TextInput
         style={styles.textArea}
@@ -15,15 +17,17 @@ export default function MyTextArea() {
         onChangeText={setText}
       />
     </View>
+    </SafeScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 6,
+    marginTop : 10
   },
   textArea: {
-    height: 150,
+    height: "100%",
     borderColor: '#ccc',
     borderWidth: 1,
     padding: 10,
