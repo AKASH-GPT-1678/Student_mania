@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, FlatList } from 'react-native';
 import React from 'react';
 import SafeScreenWrapper from '../wrapper/safescreenwrapper';
-import ClassBanner from '../utils/classbanner';
+import ClassBanner from '../components/classbanner';
 import AnnouncementCard from '../components/announcements';
 
 const announcements = [
@@ -47,7 +47,7 @@ const IndexPage = () => {
   return (
     <SafeScreenWrapper>
       <View>
-        {/* Class Banner */}
+   
         <View
           style={{
             height: 150,
@@ -59,7 +59,6 @@ const IndexPage = () => {
           <ClassBanner />
         </View>
 
-        {/* Announcements List */}
         <View style={{ paddingHorizontal: 12, height: "100%", backgroundColor: "#D5DBE3" }}>
           <FlatList
             data={announcements}

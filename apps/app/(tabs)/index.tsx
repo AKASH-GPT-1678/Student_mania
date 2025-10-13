@@ -2,13 +2,14 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import Button from '../utils/button';
 import { router } from 'expo-router';
-
+import Chat from '../class/chat';
 const IndexPage = () => {
   return (
     <View style={styles.container}>
-      <View style={styles.buttons}>
+      {/* <View style={styles.buttons}>
         <Button title='Login' onPress={() => router.push('/signin')} width={120} />
-      </View>
+      </View> */}
+      <Chat />
     </View>
   )
 }
