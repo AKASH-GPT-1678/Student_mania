@@ -10,7 +10,8 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { BrandsModule } from './brands/brands.module';
 import { PaymentModule } from './payment/payment.module';
-import { AttendanceModule } from './attendance/attendance.module';
+
+import { ClassModule } from './class/class.module';
 
 
 @Resolver()
@@ -38,7 +39,9 @@ class HelloResolver {
 
     PaymentModule,
 
-    AttendanceModule,
+
+
+    ClassModule,
 
 
   ],
