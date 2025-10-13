@@ -6,10 +6,10 @@ import Chat from '../class/chat';
 const IndexPage = () => {
   return (
     <View style={styles.container}>
-      {/* <View style={styles.buttons}>
+      <View style={styles.buttons}>
         <Button title='Login' onPress={() => router.push('/signin')} width={120} />
-      </View> */}
-      <Chat />
+      </View>
+      
     </View>
   )
 }

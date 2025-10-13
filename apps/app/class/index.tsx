@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import React from 'react';
 import SafeScreenWrapper from '../wrapper/safescreenwrapper';
 import ClassBanner from '../components/classbanner';
 import AnnouncementCard from '../components/announcements';
+import { router } from 'expo-router';
 
 const announcements = [
   {
@@ -47,7 +48,7 @@ const IndexPage = () => {
   return (
     <SafeScreenWrapper>
       <View>
-   
+
         <View
           style={{
             height: 150,
@@ -57,6 +58,20 @@ const IndexPage = () => {
           }}
         >
           <ClassBanner />
+        </View>
+
+        <View className='px-4 py-4  ' style={{ backgroundColor: "#D5DBE3" }}>
+          <TouchableOpacity style={{ padding: 10, backgroundColor: "#2784F5" }} className='text-center rounded-xl'
+            onPress={() => router.push({
+              pathname: "/class/classwork",
+              params: { form: 'true' }
+            })}
+
+
+          >
+            <Text className='text-center'>New Classwork</Text>
+
+          </TouchableOpacity>
         </View>
 
         <View style={{ paddingHorizontal: 12, height: "100%", backgroundColor: "#D5DBE3" }}>
