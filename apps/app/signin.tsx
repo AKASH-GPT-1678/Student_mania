@@ -1,17 +1,13 @@
-import { StyleSheet, Text, TextInput, View, Button, Pressable, Alert } from 'react-native'
+import { StyleSheet, Text, TextInput, View, Pressable, Alert } from 'react-native'
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { useSignIn, useSignUp } from '@clerk/clerk-expo';
 import * as WebBrowser from "expo-web-browser";
 import { useOAuth } from "@clerk/clerk-expo";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { useAppDispatch } from './redux/reduxhooks';
-
 import axios from 'axios';
-
 import { useDispatch } from 'react-redux';
 import { login } from './redux/userSlice';
 WebBrowser.maybeCompleteAuthSession();
@@ -192,7 +188,7 @@ const SignInn = () => {
                 <View style={styles.brand}>
                     <Text className='font-bold text-blue-600' onPress={
                         () =>
-                            router.push("/(zbrand)/brandsign")
+                            router.push("/class")
                     }>Brand SignIn</Text>
 
                 </View>

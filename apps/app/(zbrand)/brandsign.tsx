@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View, Pressable, Alert } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Pressable, Alert, ActivityIndicator } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -9,11 +9,44 @@ import { useDispatch } from 'react-redux';
 
 
 const SignInn = () => {
-  const [email, setEmail] = React.useState('');
+  const [code, setBrandCode] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [message, setMessage] = React.useState("");
+
   const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
-  const dispatch = useDispatch();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await axios.post(`${BASE_URL}/api/brands/login`, {
+        code: code,
+        password: password,
+      });
+
+
+      console.log("Response:", response.data);
+      setMessage("Login successful!");
+
+    
+
+    } catch (error: any) {
+      // handle error
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error:", error.response?.data || error.message);
+        setMessage(`Error: ${error.response?.data?.message || error.message}`);
+      } else {
+        console.error("Unexpected error:", error);
+        setMessage("An unexpected error occurred.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
 
@@ -39,10 +72,11 @@ const SignInn = () => {
               style={styles.textInput}
               placeholder="Enter your brand code"
               placeholderTextColor="#A1A1A1"
-              keyboardType="email-address"
+              keyboardType="default"
+
               autoCapitalize="none"
               autoCorrect={false}
-              onChangeText={(text) => setEmail(text)}
+              onChangeText={(text) => setBrandCode(text)}
             />
           </View>
 
@@ -64,9 +98,12 @@ const SignInn = () => {
               )}
             </View>
           </View>
+          {loading && <View style={styles.loader}>
+            <ActivityIndicator size={50} />
+          </View>}
 
           <View style={styles.buttonContainer}>
-            <Pressable style={styles.loginButton} >
+            <Pressable style={styles.loginButton} onPress={() => handleLogin}>
               <Text style={styles.loginButtonText}>Log In</Text>
             </Pressable>
           </View>
@@ -78,7 +115,7 @@ const SignInn = () => {
 
 
         <Text style={styles.website}>
-          If you don't have brand code then visit website www.theakashgupta.com to register 
+          If you don't have brand code then visit website www.theakashgupta.com to register
 
         </Text>
       </View>
@@ -93,12 +130,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
     height: "100%",
+
   },
   sidedisplay: {
     flex: 1,
     alignItems: "center",
     paddingHorizontal: 24,
     paddingVertical: 32,
+  },
+  loader: {
+    position: "absolute",
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    top: 250
+
+
+
   },
   header: {
     fontSize: 36,
@@ -111,17 +160,17 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 400,
   },
- website: {
-  position: 'absolute',
-  bottom: 20,              
-  left: 0,
-  right: 0,
-  textAlign: 'center',
-  fontSize: 16,
-  fontWeight: '500',
-  color: '#333333',
-  paddingHorizontal: 20,  
-},
+  website: {
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 0,
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333333',
+    paddingHorizontal: 20,
+  },
 
   loginTitle: {
     fontSize: 24,

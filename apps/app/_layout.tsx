@@ -20,6 +20,9 @@ export default function RootLayout() {
 
 
         <Stack.Screen name="(tabs)" options={{ headerShown: false, }} />
+        <Stack.Screen name="(zbrand)" options={{ headerShown: false, }} />
+        <Stack.Screen name="(views)" options={{ headerShown: false, }} />
+              <Stack.Screen name="class" options={{ headerShown: false, }} />
 
       </Stack>
     </ReduxWrapper>

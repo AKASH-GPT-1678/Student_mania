@@ -59,14 +59,22 @@ const VerifyBrand = () => {
     <div className="mb-4">
       <p className="text-sm text-gray-500 font-semibold mb-2">Brand Code</p>
       <div className="bg-gray-100 rounded-lg py-3 px-4 text-gray-800 font-mono text-base">
-        {brandCode}
+        <p>
+            {brandCode.toString()}
+
+        </p>
+      
       </div>
     </div>
 
     <div>
       <p className="text-sm text-gray-500 font-semibold mb-2">Brand Password</p>
       <div className="bg-gray-100 rounded-lg py-3 px-4 text-gray-800 font-mono text-base">
-        {brandPassword}
+        <p>
+              {brandPassword.toString()}
+
+        </p>
+    
       </div>
     </div>
   </div>}
