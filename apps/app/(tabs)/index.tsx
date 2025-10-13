@@ -8,8 +8,9 @@ const IndexPage = () => {
     <View style={styles.container}>
       <View style={styles.buttons}>
         <Button title='Login' onPress={() => router.push('/signin')} width={120} />
+        <Button title='New Class' onPress={() => router.push('/newclass')} width={120} />
       </View>
-      
+
     </View>
   )
 }
@@ -26,6 +27,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end", // pushes content to right side
     paddingHorizontal: 20,      // adds some spacing from right edge
-  
+
   },
 });
