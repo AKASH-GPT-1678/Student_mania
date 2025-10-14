@@ -80,6 +80,7 @@ model Classes {
   updatedAt DateTime @updatedAt
   userId    String
   user      User     @relation(fields: [userId], references: [id])
+  adminList String[]
 
   assignments Assignment[]
 }

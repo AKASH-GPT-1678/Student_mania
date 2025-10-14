@@ -5,9 +5,10 @@ import * as fs from 'fs';
 import { CreateClassDto } from './dto/create-class.dto';
 
 import { ClassService } from './class.service';
+import { AppService } from 'src/app.service';
 @Controller('class')
 export class ClassController {
-  constructor(private readonly classService: ClassService) { }
+  constructor(private readonly classService: ClassService, private readonly appservice : AppService) { }
 
   @Post('attendance')
   // @UseGuards(JwtGuard)
