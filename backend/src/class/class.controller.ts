@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Post, Req, UploadedFile, UseGuards, UseInterceptors, Body, HttpStatus, HttpCode, HttpException } from '@nestjs/common';
+import { BadRequestException, Controller, Post, Req, UploadedFile, UseGuards, UseInterceptors, Body, HttpStatus, HttpCode, HttpException, Get } from '@nestjs/common';
 import { JwtGuard } from 'src/jwt/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
@@ -75,6 +75,21 @@ export class ClassController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  };
+
+  @Get('classes')
+  @UseGuards(JwtGuard)
+  async loadClass(@Req() req) {
+
+    const userId = req.user?.sub;
+    if (!userId) {
+      throw new HttpException(
+        'Unauthorized: User ID not found in token',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    const classes = await this.classService.loadClass(userId);
+    return classes;
   }
 
 

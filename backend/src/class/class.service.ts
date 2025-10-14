@@ -1,4 +1,4 @@
-import { Injectable , NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -69,5 +69,16 @@ export class ClassService {
     });
 
     return newClass;
+  }
+
+
+  async loadClass(id: string) {
+    const classData = await this.prisma.classes.findMany({
+      where: { userId: id },
+    });
+    if (!classData) {
+      throw new NotFoundException(`Class with id ${id} not found`);
+    }
+    return classData;
   }
 }

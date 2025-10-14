@@ -10,6 +10,9 @@ const IndexPage = () => {
         <Button title='Login' onPress={() => router.push('/signin')} width={120} />
         <Button title='New Class' onPress={() => router.push('/newclass')} width={120} />
       </View>
+      <View>
+        
+      </View>
 
     </View>
   )

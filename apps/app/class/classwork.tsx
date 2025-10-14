@@ -3,9 +3,11 @@ import React from 'react'
 import SafeScreenWrapper from '../wrapper/safescreenwrapper';
 import { useLocalSearchParams } from 'expo-router';
 import AssignmentForm from '../components/newclasswork';
-const Projects = () => {
+const Classwork = () => {
   const [showForm, setShowForm] = React.useState(false);
      const { form } = useLocalSearchParams();
+
+     
 
    React.useEffect(() => {
  
@@ -28,6 +30,6 @@ const Projects = () => {
   )
 }
 
-export default Projects;
+export default Classwork;
 
 const styles = StyleSheet.create({})

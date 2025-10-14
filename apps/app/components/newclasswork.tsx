@@ -23,6 +23,10 @@ export default function AssignmentForm() {
         );
     };
 
+    const handleSubmit = () => {
+        console.log('Assignment submitted:', title, description, points, selectedRecipients);
+    };
+
     return (
         <SafeAreaView style={styles.safe}>
             <View style={styles.container}>

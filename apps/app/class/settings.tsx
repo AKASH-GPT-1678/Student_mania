@@ -4,7 +4,9 @@ import SafeScreenWrapper from '../wrapper/safescreenwrapper';
 import AssignmentForm from '../components/newclasswork';
 const settings = () => {
   return (
-    <AssignmentForm/>
+    <View>
+      <Text>Settings</Text>
+    </View>
   )
 }
 

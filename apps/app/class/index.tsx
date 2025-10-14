@@ -4,6 +4,10 @@ import SafeScreenWrapper from '../wrapper/safescreenwrapper';
 import ClassBanner from '../components/classbanner';
 import AnnouncementCard from '../components/announcements';
 import { router } from 'expo-router';
+import useFetch, { loadClass } from '../hooks/loadClass';
+import { useAppSelector } from '../redux/reduxhooks';
+import { ENV } from '../utils/ENV';
+import axios from 'axios';
 
 const announcements = [
   {
@@ -45,6 +49,13 @@ const announcements = [
 ];
 
 const IndexPage = () => {
+  const token = useAppSelector((state) => state.user.token);
+
+
+
+
+  const { data, loading, error } = useFetch(() => loadClass(token as string), true);
+
   return (
     <SafeScreenWrapper>
       <View>
