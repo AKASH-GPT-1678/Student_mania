@@ -6,9 +6,10 @@ import { CreateClassDto } from './dto/create-class.dto';
 
 import { ClassService } from './class.service';
 import { AppService } from 'src/app.service';
+import { CreateAssignmentDto } from './dto/create-assignment-dto';
 @Controller('class')
 export class ClassController {
-  constructor(private readonly classService: ClassService, private readonly appservice : AppService) { }
+  constructor(private readonly classService: ClassService, private readonly appservice: AppService) { }
 
   @Post('attendance')
   // @UseGuards(JwtGuard)
@@ -48,6 +49,7 @@ export class ClassController {
       data.id = userId;
 
       const createdClass = await this.classService.createClass(data);
+      console.log(createdClass);
 
 
       return {
@@ -91,6 +93,35 @@ export class ClassController {
     }
     const classes = await this.classService.loadClass(userId);
     return classes;
+  }
+
+  @Post('assignments')
+  @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(JwtGuard)
+  async createAssignments(
+    @Req() req,
+    @Body() data: CreateAssignmentDto,
+    //@ts-ignore
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const userId = req.user?.sub;
+    if (!userId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+
+
+    let attachments: string[] = [];
+    if (file) {
+      const fileUrl = await this.appservice.uploadFile(file);
+      attachments.push(fileUrl);
+    }
+
+
+    data.attachments = attachments;
+
+
+    const assignments = await this.classService.createAssignments(data, userId);
+    return assignments;
   }
 
 

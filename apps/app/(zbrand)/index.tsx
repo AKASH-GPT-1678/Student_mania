@@ -4,14 +4,14 @@ import SafeScreenWrapper from '../wrapper/safescreenwrapper'
 import { useLocalSearchParams } from 'expo-router'
 
 const Index = () => {
-  const { verified} = useLocalSearchParams();
+  const { verified } = useLocalSearchParams();
 
-  if(!verified) return <Text>You are not verified</Text>;
+  if (!verified) return <Text>You are not verified</Text>;
   return (
     <SafeScreenWrapper>
-    <View>
-      <Text>Index</Text>
-    </View>
+      <View>
+        <Text>Index</Text>
+      </View>
     </SafeScreenWrapper>
   )
 }

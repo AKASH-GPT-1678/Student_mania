@@ -5,19 +5,19 @@ import { useLocalSearchParams } from 'expo-router';
 import AssignmentForm from '../components/newclasswork';
 const Classwork = () => {
   const [showForm, setShowForm] = React.useState(false);
-     const { form } = useLocalSearchParams();
+  const { form } = useLocalSearchParams();
 
-     
 
-   React.useEffect(() => {
- 
+
+  React.useEffect(() => {
+
     if (form) setShowForm(true);
 
   }, [])
 
-  if (showForm) return <AssignmentForm />
+  if (showForm) return <AssignmentForm />;
 
- 
+
   return (
     <SafeScreenWrapper >
       <View >

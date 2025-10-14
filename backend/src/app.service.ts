@@ -1,62 +1,69 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import * as AWS from 'aws-sdk';
+
 @Injectable()
 export class AppService {
-  private readonly AWS_S3_BUCKET = process.env.AWS_S3_BUCKET || 'bookly-app';
+  private readonly s3: AWS.S3;
+  private readonly bucketName: string;
 
-  private readonly s3 = new AWS.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_KEY,
-    region: 'eu-north-1',
-  });
+  constructor(private readonly prisma: PrismaService) {
+    // Initialize AWS S3
+    this.bucketName = process.env.AWS_S3_BUCKET ?? 'bookly-app';
 
-  constructor(private prisma: PrismaService) { }
+    this.s3 = new AWS.S3({
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,  
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY, 
+      region: process.env.AWS_REGION ?? 'eu-north-1',
+    });
+  }
 
   //@ts-ignore
   async uploadFile(file: Express.Multer.File): Promise<string> {
+    if (!file) {
+      throw new InternalServerErrorException('No file provided');
+    }
+
     try {
-      const params = {
-        Bucket: this.AWS_S3_BUCKET,
-        Key: file.originalname,
+      const params: AWS.S3.PutObjectRequest = {
+        Bucket: this.bucketName,
+        Key: `${Date.now()}-${file.originalname}`, // ✅ unique name
         Body: file.buffer,
         ContentType: file.mimetype,
         ContentDisposition: 'inline',
       };
 
-      const uploadResult = await this.s3.upload(params).promise();
-
-
-      return uploadResult.Location;
+      const { Location } = await this.s3.upload(params).promise();
+      return Location;
     } catch (error) {
-      console.error('Error uploading file:', error);
-      throw new Error('File upload failed');
+      console.error('❌ Error uploading file to S3:', error);
+      throw new InternalServerErrorException('File upload failed');
     }
   }
 
   /**
-   * Generic upload helper in case you pass raw file buffer manually
+   * Generic upload helper (for manual file buffers)
    */
   async s3_upload(
-    file: Buffer,
+    fileBuffer: Buffer,
     bucket: string,
-    name: string,
-    mimetype: string,
+    fileName: string,
+    mimeType: string,
   ): Promise<string> {
     try {
-      const params = {
+      const params: AWS.S3.PutObjectRequest = {
         Bucket: bucket,
-        Key: name,
-        Body: file,
-        ContentType: mimetype,
+        Key: fileName,
+        Body: fileBuffer,
+        ContentType: mimeType,
         ContentDisposition: 'inline',
       };
 
-      const uploadResult = await this.s3.upload(params).promise();
-      return uploadResult.Location;
+      const { Location } = await this.s3.upload(params).promise();
+      return Location;
     } catch (error) {
-      console.error('S3 Upload Error:', error);
-      throw new Error('S3 upload failed');
+      console.error('❌ S3 Upload Error:', error);
+      throw new InternalServerErrorException('S3 upload failed');
     }
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, } from 'react';
 import {
 
     View,
@@ -8,14 +8,47 @@ import {
     StyleSheet,
     ScrollView,
     Platform,
+    Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as DocumentPicker from 'expo-document-picker';
+import Button from '../utils/button';
+import axios from 'axios';
+import { ENV } from '../utils/ENV';
+import { useAppSelector } from '../redux/reduxhooks';
 
 export default function AssignmentForm() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [points, setPoints] = useState('100');
+    const [file, setFile] = useState<any>(null);
+    const [dueDate, setDueDate] = useState(new Date().toISOString());
+    const [classId, setClassId] = useState('d8c36ddc-4358-4b39-be31-233593e18b53');
     const [selectedRecipients, setSelectedRecipients] = useState(['Akash', 'All students']);
+    const token = useAppSelector((state) => state.user.token);
+
+    const pickDocument = async () => {
+        try {
+            const res: any = await DocumentPicker.getDocumentAsync({
+                copyToCacheDirectory: true,
+                type: '*/*',
+            });
+
+            if (res.type === 'cancel') {
+                console.log('User cancelled');
+                return;
+            }
+
+            if (res.size && res.size > 5 * 1024 * 1024) {
+                Alert.alert('File too large', 'Please select a file smaller than 5 MB');
+                return;
+            }
+
+            setFile(res);
+            Alert.alert('File selected', `File: ${res.name}`);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const toggleRecipient = (name: string) => {
         setSelectedRecipients(prev =>
@@ -23,25 +56,68 @@ export default function AssignmentForm() {
         );
     };
 
-    const handleSubmit = () => {
-        console.log('Assignment submitted:', title, description, points, selectedRecipients);
+
+
+
+
+
+
+    const handleSubmit = async () => {
+        const formData = new FormData();
+        const fileToUpload = {
+            uri: file.uri,
+            type: file.type || 'application/octet-stream',
+            name: file.name || 'document',
+        };
+
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('dueDate', dueDate);
+        formData.append('classId', classId);
+        formData.append('file', fileToUpload as any);
+
+        try {
+
+            const response = await axios.post(`${ENV.BASE_URL}/class/assignments`, formData, {
+                headers: {
+
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log(response.data);
+
+            if (response.status === 201) {
+                Alert.alert('Success', 'Assignment created successfully!');
+            }
+
+
+
+
+        } catch (error) {
+            console.error(error);
+
+
+        }
+
+
+
     };
 
     return (
         <SafeAreaView style={styles.safe}>
             <View style={styles.container}>
-                {/* Top Bar */}
+
                 <View style={styles.topBar}>
                     <TouchableOpacity style={styles.iconButton}>
                         <Text style={styles.iconText}>✕</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.assignButton}>
+                    <TouchableOpacity style={styles.assignButton} onPress={handleSubmit}>
                         <Text style={styles.assignText}>Assign</Text>
                     </TouchableOpacity>
                 </View>
 
                 <ScrollView contentContainerStyle={styles.body}>
-                    {/* Title */}
+
                     <TextInput
                         value={title}
                         onChangeText={setTitle}
@@ -70,9 +146,14 @@ export default function AssignmentForm() {
                                 );
                             })}
                         </View>
+                        <Text>Upload Documents</Text>
+
+                        <Button title="Pick Document" onPress={pickDocument} width={120} />
+
+
                     </View>
 
-                    {/* Description box */}
+
                     <View style={styles.descriptionBox}>
                         <Text style={styles.descriptionLabel}>Description</Text>
                         <TextInput
@@ -85,21 +166,21 @@ export default function AssignmentForm() {
                         />
                     </View>
 
-                    {/* Attachment + points row */}
+
                     <View style={styles.rowSpace}>
                         <TouchableOpacity style={styles.attachmentButton}>
                             <Text style={styles.attachmentText}>📎  Add attachment</Text>
                         </TouchableOpacity>
 
                         <View style={styles.pointsPill}>
-                            <Text style={styles.pointsText}>{points} points</Text>
-                            <TouchableOpacity style={styles.pointsX} onPress={() => setPoints('')}>
+                            <Text style={styles.pointsText}>{dueDate} points</Text>
+                            <TouchableOpacity style={styles.pointsX} onPress={() => setDueDate('')}>
                                 <Text style={styles.pointsXText}>✕</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
 
-                    {/* Links */}
+
                     <TouchableOpacity style={styles.linkRow}>
                         <Text style={styles.linkText}>Set due date</Text>
                     </TouchableOpacity>
@@ -108,7 +189,7 @@ export default function AssignmentForm() {
                         <Text style={styles.linkText}>Add topic</Text>
                     </TouchableOpacity>
 
-                    {/* spacer */}
+
                     <View style={{ height: 200 }} />
                 </ScrollView>
             </View>
