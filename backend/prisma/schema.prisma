@@ -70,19 +70,32 @@ model Advertisement {
 }
 
 model Classes {
-  id        String   @id @default(uuid())
-  name      String?
-  section   String
-  room      String
-  subject   String
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  adminList String[]
+  id            String         @id @default(uuid())
+  name          String?
+  section       String
+  room          String
+  subject       String
+  password      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  userId        String
+  user          User           @relation(fields: [userId], references: [id])
+  adminList     String[]
+  announcements Announcement[]
 
   assignments Assignment[]
+}
+
+model Announcement {
+  id          String   @id @default(uuid())
+  classId     String
+  classes     Classes  @relation(fields: [classId], references: [id])
+  category    String
+  title       String
+  description String?
+  creatorId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Assignment {

@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Post, Req, UploadedFile, UseGuards, UseInterceptors, Body, HttpStatus, HttpCode, HttpException, Get } from '@nestjs/common';
+import { BadRequestException, Controller, Post, Req, UploadedFile, UseGuards, UseInterceptors, Body, HttpStatus, HttpCode, HttpException, Get, Param } from '@nestjs/common';
 import { JwtGuard } from 'src/jwt/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
@@ -7,7 +7,8 @@ import { CreateClassDto } from './dto/create-class.dto';
 import { ClassService } from './class.service';
 import { AppService } from 'src/app.service';
 import { CreateAssignmentDto } from './dto/create-assignment-dto';
-@Controller('class')
+import { CreateAnnouncementDto } from './dto/create-announcement';
+@Controller('api/class')
 export class ClassController {
   constructor(private readonly classService: ClassService, private readonly appservice: AppService) { }
 
@@ -79,6 +80,44 @@ export class ClassController {
     }
   };
 
+
+  @Get('load')
+  @UseGuards(JwtGuard)
+  async getOneClass(@Req() req) {
+    const userId = req.user?.sub;
+    if (!userId) {
+      throw new HttpException(
+        'Unauthorized: User ID not found in token',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    const oneClass = await this.classService.getOneClass(userId);
+    return oneClass;
+
+  }
+  @UseGuards(JwtGuard)
+  @Get('announcements/:classId')
+  @HttpCode(200) // sets HTTP status to 200 OK
+  async loadAnnouncements(@Param('classId') classId: string) {
+    return this.classService.getAnnouncementsByClass(classId);
+  }
+  @Post('announcement')
+  @UseGuards(JwtGuard)
+  async createAnnouncement(@Req() req, @Body() data: CreateAnnouncementDto) {
+
+    const userId = req.user?.sub;
+    if (!userId) {
+      throw new HttpException(
+        'Unauthorized: User ID not found in token',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    data.creatorId = userId;
+    const announcement = await this.classService.createAnnouncement(data);
+    return announcement;
+
+  }
+
   @Get('classes')
   @UseGuards(JwtGuard)
   async loadClass(@Req() req) {
@@ -119,7 +158,7 @@ export class ClassController {
     }
 
 
-    
+
 
 
     const assignments = await this.classService.createAssignments(data, userId);

@@ -7,7 +7,7 @@ import React from "react";
 export const loadClass = async (token : string) => {
   try {
 
-    const response = await axios.get(`${ENV.BASE_URL}/class/classes`, {
+    const response = await axios.get(`${ENV.BASE_URL}/api/class/load`, {
       headers: { Authorization: `Bearer ${token}` },
     });
         console.log(response.data);

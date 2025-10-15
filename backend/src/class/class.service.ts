@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -7,6 +7,8 @@ import * as FormData from 'form-data';
 import * as fs from 'fs';
 import * as path from 'path';
 import fetch from 'node-fetch';
+import { CreateAnnouncementDto } from './dto/create-announcement';
+import { NotAdminError } from 'src/errors/not-admin';
 @Injectable()
 export class ClassService {
   process_url;
@@ -18,8 +20,21 @@ export class ClassService {
 
   }
 
+  async getOneClass(id: string) {
+    const oneClass = await this.prisma.classes.findFirst({
+      where: {
+        userId: id
+      }
+    });
 
- //@ts-ignore
+    if (!oneClass) {
+      throw new NotFoundException(`Class with id ${id} not found`);
+    }
+    return oneClass;
+  }
+
+
+  //@ts-ignore
   async processAttendance(file: Express.Multer.File) {
     try {
       const formData = new FormData();
@@ -86,6 +101,60 @@ export class ClassService {
     });
 
     return newClass;
+  };
+
+
+  async createAnnouncement(dto: CreateAnnouncementDto) {
+
+    const classExists = await this.prisma.classes.findUnique({
+      where: { id: dto.classId },
+    });
+
+    if (!classExists) {
+      throw new NotFoundException(`Class with ID ${dto.classId} not found`);
+    };
+
+    if (!dto.creatorId) {
+      throw new BadRequestException('Creator ID is required');
+    };
+
+    const isCreatorAdmin = classExists?.adminList.includes(dto.creatorId);
+
+    if (!isCreatorAdmin) {
+      throw new NotAdminError("Creator is not admin");
+    };
+
+    const announcement = await this.prisma.announcement.create({
+      data: {
+        classId: dto.classId,
+        category: dto.category,
+        title: dto.title,
+        description: dto.description,
+        creatorId: dto.creatorId,
+      },
+    });
+
+    return announcement;
+  };
+    async getAnnouncementsByClass(classId: string, userId?: string) {
+    // Optional: check if class exists
+    const classExists = await this.prisma.classes.findUnique({
+      where: { id: classId },
+    });
+    if (!classExists) throw new NotFoundException(`Class with ID ${classId} not found`);
+
+    // // Optional: check if user belongs to class
+    // if (userId && !classExists.adminList.includes(userId) && classExists.studentList?.includes(userId) === false) {
+    //   throw new ForbiddenException("User does not belong to this class");
+    // }
+
+    // Fetch announcements ordered by newest first
+    const announcements = await this.prisma.announcement.findMany({
+      where: { classId },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return announcements;
   }
 
   async createAssignments(data: CreateAssignmentDto, id: string) {
