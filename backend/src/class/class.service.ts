@@ -3,6 +3,10 @@ import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateAssignmentDto } from './dto/create-assignment-dto';
+import * as FormData from 'form-data';
+import * as fs from 'fs';
+import * as path from 'path';
+import fetch from 'node-fetch';
 @Injectable()
 export class ClassService {
   process_url;
@@ -15,21 +19,23 @@ export class ClassService {
   }
 
 
-  //@ts-ignore
+ //@ts-ignore
   async processAttendance(file: Express.Multer.File) {
     try {
-
-
       const formData = new FormData();
-      const blob = new Blob([file.buffer], { type: file.mimetype });
-      const fileObject = new File([blob], file.originalname, { type: file.mimetype });
 
-      formData.append("file", fileObject);
+      // If file is saved on disk
+      const filePath = path.resolve(file.path); // multer destination
+      formData.append('file', fs.createReadStream(filePath), {
+        filename: file.originalname,
+        contentType: file.mimetype,
+      });
 
+      // Send to FastAPI
       const response = await fetch(this.process_url, {
-        method: "POST",
-        body: formData as any,
-
+        method: 'POST',
+        body: formData,
+        headers: formData.getHeaders(), // important!
       });
 
       if (!response.ok) {
@@ -38,14 +44,19 @@ export class ClassService {
       }
 
       const data = await response.json();
-      console.log("✅ Server response:", data);
+      console.log('✅ Server response:', data);
+
+      // Delete the uploaded file after processing
+      fs.unlink(filePath, (err) => {
+        if (err) console.error('Failed to delete uploaded file:', err);
+      });
+
       return data;
     } catch (error: any) {
-      console.error("❌ Error processing attendance:", error.message || error);
+      console.error('❌ Error processing attendance:', error.message || error);
       throw error;
     }
   }
-
   async createClass(data: CreateClassDto) {
 
     const user = await this.prisma.user.findUnique({
@@ -65,7 +76,7 @@ export class ClassService {
         subject: data.subject || '',
         password: 'defaultPassword',
         userId: user.id,
-        adminList : [user.id]
+        adminList: [user.id]
 
 
 
@@ -77,55 +88,55 @@ export class ClassService {
     return newClass;
   }
 
-async createAssignments(data: CreateAssignmentDto, id: string) {
-  try {
+  async createAssignments(data: CreateAssignmentDto, id: string) {
+    try {
 
-    const isValidUser = await this.prisma.classes.findUnique({
-      where: { id: data.classId },
-    });
+      const isValidUser = await this.prisma.classes.findUnique({
+        where: { id: data.classId },
+      });
 
-    if (!isValidUser) {
-      throw new NotFoundException(`Class with id ${data.classId} not found`);
+      if (!isValidUser) {
+        throw new NotFoundException(`Class with id ${data.classId} not found`);
+      }
+
+
+      if (isValidUser.userId !== id && !isValidUser.adminList.includes(id)) {
+
+        throw new BadRequestException('You are not authorized to create assignments for this class');
+      }
+
+      const assignment = await this.prisma.assignment.create({
+        data: {
+          title: data.title,
+          description: data.description,
+          dueDate: data.dueDate ? new Date(data.dueDate) : null,
+          classId: data.classId,
+          attachments: data.attachments || [],
+        },
+      });
+
+
+      return {
+        success: true,
+        message: 'Assignment created successfully',
+        assignment,
+      };
+    } catch (error) {
+
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+
+
+      if (error.code === 'P2002') {
+        throw new BadRequestException('Duplicate assignment or invalid class ID');
+      }
+
+
+      console.error('Error creating assignment:', error);
+      throw new BadRequestException('Something went wrong while creating the assignment');
     }
-
-
-    if (isValidUser.userId !== id && !isValidUser.adminList.includes(id)) {
-
-      throw new BadRequestException('You are not authorized to create assignments for this class');
-    }
-
-    const assignment = await this.prisma.assignment.create({
-      data: {
-        title: data.title,
-        description: data.description,
-        dueDate: data.dueDate ? new Date(data.dueDate) : null,
-        classId: data.classId,
-        attachments: data.attachments || [],
-      },
-    });
-
-
-    return {
-      success: true,
-      message: 'Assignment created successfully',
-      assignment,
-    };
-  } catch (error) {
-
-    if (error instanceof NotFoundException || error instanceof BadRequestException) {
-      throw error;
-    }
-
-
-    if (error.code === 'P2002') {
-      throw new BadRequestException('Duplicate assignment or invalid class ID');
-    }
-
-
-    console.error('Error creating assignment:', error);
-    throw new BadRequestException('Something went wrong while creating the assignment');
   }
-}
 
 
 

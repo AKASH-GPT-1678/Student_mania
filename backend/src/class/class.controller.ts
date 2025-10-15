@@ -16,10 +16,10 @@ export class ClassController {
   //@ts-ignore
   async createAttendace(@UploadedFile() file: Express.Multer.File) {
     console.log("I AM FILE", file);
-    // if (!file.originalname.endsWith(".csv")) {
-    //   throw new BadRequestException("Only CSV files are allowed to process");
+    if (!file.originalname.endsWith(".csv")) {
+      throw new BadRequestException("Only CSV files are allowed to process");
 
-    // };
+    };
 
 
     const response = await this.classService.processAttendance(file);
