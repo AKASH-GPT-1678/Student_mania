@@ -8,53 +8,66 @@ import useFetch, { loadClass } from '../hooks/loadClass';
 import { useAppSelector } from '../redux/reduxhooks';
 import { ENV } from '../utils/ENV';
 import axios from 'axios';
+import LoadingScreen from '../components/loadingScreen';
+import ProductNotFound from '../components/not-found';
 
-const announcements = [
-  {
-    id: 1,
-    type: "Exam",
-    announcement: "Math Midterm Exam will be held in Room 101 at 10:00 AM.",
-    time: "2 days ago"
-  },
-  {
-    id: 2,
-    type: "Sports",
-    announcement: "Football practice scheduled at the school field from 4:00 PM to 5:30 PM.",
-    time: "1 day ago"
-  },
-  {
-    id: 3,
-    type: "Event",
-    announcement: "Annual science exhibition will start at 9:00 AM in the auditorium.",
-    time: "3 days ago"
-  },
-  {
-    id: 4,
-    type: "Exam",
-    announcement: "Short history quiz covering chapters 5-7, starting at 11:00 AM in Room 202.",
-    time: "1 day ago"
-  },
-  {
-    id: 5,
-    type: "Event",
-    announcement: "Inter-class art competition at 2:00 PM in the art room.",
-    time: "4 days ago"
-  },
-  {
-    id: 6,
-    type: "Sports",
-    announcement: "Basketball match between Class 10A and 10B at 3:00 PM in the gym.",
-    time: "2 days ago"
-  }
-];
+;
 
-const IndexPage = () => {
+const ClassWork = () => {
   const token = useAppSelector((state) => state.user.token);
+  const [announcements, setAnnouncements] = React.useState<any>(null);
+  const [announceLoading, setAnnounceLoading] = React.useState(false);
+
+
 
 
 
 
   const { data, loading, error } = useFetch(() => loadClass(token as string), true);
+
+  async function loadAnnouncements() {
+    if (!data?.id) return;
+
+    setAnnounceLoading(true);
+
+    try {
+      const response = await axios.get(
+        `${ENV.BASE_URL}/api/class/announcements/${data.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response.data);
+
+      if (response.data) {
+        setAnnouncements(response.data);
+      }
+    } catch (error: any) {
+      console.error('Failed to load announcements:', error.message || error);
+    } finally {
+      setAnnounceLoading(false);
+    }
+  };
+
+
+
+  React.useEffect(() => {
+    loadAnnouncements()
+
+  }, [data])
+
+  if (loading) return (<LoadingScreen />);
+
+  if (error) return (<ProductNotFound />);
+
+
+
+
+
+
+
 
   return (
     <SafeScreenWrapper>
@@ -91,8 +104,10 @@ const IndexPage = () => {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <AnnouncementCard
-                type={item.type}
-                announcement={item.announcement}
+                type={item.category}
+                title={item.title}
+
+                announcement={item.description}
                 time={item.time}
               />
             )}
@@ -104,6 +119,6 @@ const IndexPage = () => {
   );
 };
 
-export default IndexPage;
+export default ClassWork;
 
 const styles = StyleSheet.create({});

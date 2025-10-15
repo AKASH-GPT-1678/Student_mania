@@ -5,12 +5,13 @@ import Entypo from '@expo/vector-icons/Entypo';
 // 1️⃣ Define the interface for props
 interface AnnouncementCardProps {
   type: string;
+  title: string;
   announcement: string;
   time: string;
 }
 
 // 2️⃣ Use the interface in the component
-const AnnouncementCard: React.FC<AnnouncementCardProps> = ({ type, announcement, time }) => {
+const AnnouncementCard: React.FC<AnnouncementCardProps> = ({ type, title, announcement, time }) => {
   return (
     <View style={{ backgroundColor: "white", padding: 12 }} className='bg-white rounded-2xl'>
       <View className='flex flex-row justify-between w-full'>
@@ -21,7 +22,8 @@ const AnnouncementCard: React.FC<AnnouncementCardProps> = ({ type, announcement,
       </View>
 
       <View className='mt-2'>
-        <Text className='text-xl font-bold'>{announcement}</Text>
+        <Text className='text-xl font-bold'>{title}</Text>
+        <Text className='text-sm font-bold'>{announcement}</Text>
       </View>
 
       <View className='mt-6 mb-2'>

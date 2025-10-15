@@ -140,6 +140,7 @@ export class ClassController {
     @Req() req,
     //@ts-ignore
     @UploadedFile() file: Express.Multer.File,
+    @Body() data: CreateAssignmentDto
   ) {
     const userId = req.user?.sub;
     console.log(" i am file", file)
@@ -148,7 +149,6 @@ export class ClassController {
     };
 
 
-    const data: CreateAssignmentDto = req.body;
 
 
     let attachments: string[] = [];

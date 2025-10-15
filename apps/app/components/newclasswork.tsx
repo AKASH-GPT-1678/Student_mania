@@ -1,4 +1,4 @@
-import React, { useState, } from 'react';
+import React, { } from 'react';
 import {
 
     View,
@@ -16,47 +16,58 @@ import Button from '../utils/button';
 import axios from 'axios';
 import { ENV } from '../utils/ENV';
 import { useAppSelector } from '../redux/reduxhooks';
+import DateTimePicker from '@react-native-community/datetimepicker';
+export default function AssignmentForm({classIdd } : {classIdd : string}) {
+    const [title, setTitle] = React.useState('');
+    const [description, setDescription] = React.useState('');
+    const [file, setFile] = React.useState<any>(null);
+    const [dueDate, setDueDate] = React.useState(new Date());
+    const [open, setOpen] = React.useState(false)
+    const [classId, setClassId] = React.useState('5a4fc92f-7f96-44b3-bf5a-bb855e99e4bd');
+    const [selectedRecipients, setSelectedRecipients] = React.useState(['Akash', 'All students']);
 
-export default function AssignmentForm() {
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [file, setFile] = useState<any>(null);
-    const [dueDate, setDueDate] = useState(new Date().toISOString());
-    const [classId, setClassId] = useState('d8c36ddc-4358-4b39-be31-233593e18b53');
-    const [selectedRecipients, setSelectedRecipients] = useState(['Akash', 'All students']);
     const token = useAppSelector((state) => state.user.token);
 
-const pickDocument = async () => {
-  try {
-    const res = await DocumentPicker.getDocumentAsync({
-      copyToCacheDirectory: true,
-      type: '*/*',
-    });
+    const pickDocument = async () => {
+        try {
+            const res = await DocumentPicker.getDocumentAsync({
+                copyToCacheDirectory: true,
+                type: '*/*',
+            });
 
-    // Check if user cancelled
-    if (res.canceled) {
-      console.log('User cancelled');
-      return;
-    }
+            // Check if user cancelled
+            if (res.canceled) {
+                console.log('User cancelled');
+                return;
+            }
 
-    // Access the first asset from the assets array
-    const pickedFile = res.assets[0];
+            // Access the first asset from the assets array
+            const pickedFile = res.assets[0];
 
-    if (pickedFile.size && pickedFile.size > 5 * 1024 * 1024) {
-      Alert.alert('File too large', 'Please select a file smaller than 5 MB');
-      return;
-    }
+            if (pickedFile.size && pickedFile.size > 5 * 1024 * 1024) {
+                Alert.alert('File too large', 'Please select a file smaller than 5 MB');
+                return;
+            }
 
-    setFile(pickedFile);
-    Alert.alert('File selected', `File: ${pickedFile.name}`);
-  } catch (error) {
-    console.error(error);
-  }
-};
+            setFile(pickedFile);
+            Alert.alert('File selected', `File: ${pickedFile.name}`);
+        } catch (error) {
+            console.error(error);
+        }
+    };
     const toggleRecipient = (name: string) => {
         setSelectedRecipients(prev =>
             prev.includes(name) ? prev.filter(p => p !== name) : [...prev, name]
         );
+    };
+    const onChange = (event: React.ChangeEvent<HTMLInputElement>, selectedDate: Date) => {
+        const currentDate = selectedDate || dueDate;
+        setOpen(Platform.OS === 'ios');
+        setDueDate(currentDate);
+    };
+
+    const showDatePicker = () => {
+        setOpen(true);
     };
 
 
@@ -65,36 +76,38 @@ const pickDocument = async () => {
 
 
 
-const handleSubmit = async () => {
-  const formData = new FormData();
+    const handleSubmit = async () => {
+        console.log(classId , "I am working ");
+        const formData = new FormData();
 
-  if (file) {
-    // React Native FormData expects the file object in this specific format
-    formData.append("file", {
-      uri: file.uri,
-      type: file.mimeType || file.type || "application/octet-stream",
-      name: file.name || "upload",
-    } as any);
-  }
+        if (file) {
+            // React Native FormData expects the file object in this specific format
+            formData.append("file", {
+                uri: file.uri,
+                type: file.mimeType || file.type || "application/octet-stream",
+                name: file.name || "upload",
+            } as any);
+        };
+        console.log(classId , "I am working ");
 
-  formData.append("title", title);
-  formData.append("description", description);
-  formData.append("dueDate", dueDate);
-  formData.append("classId", classId);
+        formData.append("title", title);
+        formData.append("description", description);
+        formData.append("dueDate", dueDate.toISOString());
+        formData.append("classId", classId);
 
-  try {
-    const response = await axios.post(`${ENV.BASE_URL}/class/assignments`, formData, {
-      headers: { 
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data', // Add this header
-      },
-    });
+        try {
+            const response = await axios.post(`${ENV.BASE_URL}/api/class/assignments`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data', // Add this header
+                },
+            });
 
-    console.log("Upload success:", response.data);
-  } catch (err: any) {
-    console.log("Upload error:", err.response?.data || err.message);
-  }
-};
+            console.log("Upload success:", response.data);
+        } catch (err: any) {
+            console.log("Upload error:", err.response?.data || err.message);
+        }
+    };
 
     return (
         <SafeAreaView style={styles.safe}>
@@ -104,8 +117,8 @@ const handleSubmit = async () => {
                     <TouchableOpacity style={styles.iconButton}>
                         <Text style={styles.iconText}>✕</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.assignButton} onPress={handleSubmit}>
-                        <Text style={styles.assignText}>Assign</Text>
+                    <TouchableOpacity style={styles.assignButton} onPress={()=>handleSubmit()}>
+                        <Text style={styles.assignText} onPress={handleSubmit}>Assign</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -139,9 +152,9 @@ const handleSubmit = async () => {
                                 );
                             })}
                         </View>
-                        <Text>Upload Documents</Text>
 
-                        <Button title="Pick Document" onPress={pickDocument} width={120} />
+
+
 
 
                     </View>
@@ -161,22 +174,33 @@ const handleSubmit = async () => {
 
 
                     <View style={styles.rowSpace}>
-                        <TouchableOpacity style={styles.attachmentButton}>
+                        <TouchableOpacity style={styles.attachmentButton} onPress={pickDocument}>
                             <Text style={styles.attachmentText}>📎  Add attachment</Text>
                         </TouchableOpacity>
+                        {
+                            file && (
+                                <Text>{file.name}</Text>
+                            )
+                        }
 
-                        <View style={styles.pointsPill}>
-                            <Text style={styles.pointsText}>{dueDate} points</Text>
-                            <TouchableOpacity style={styles.pointsX} onPress={() => setDueDate('')}>
-                                <Text style={styles.pointsXText}>✕</Text>
-                            </TouchableOpacity>
+                        <View>
+                            {open && (
+                                <DateTimePicker
+                                    value={dueDate}
+                                    mode="date"
+                                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                    onChange={onChange as any}
+                                />
+                            )}
+
                         </View>
+                        <Button onPress={() => setOpen(true)} title='Pick Due Date' backgroundColor='red' width={150}></Button>
+
+
                     </View>
 
 
-                    <TouchableOpacity style={styles.linkRow}>
-                        <Text style={styles.linkText}>Set due date</Text>
-                    </TouchableOpacity>
+
 
                     <TouchableOpacity style={styles.linkRow}>
                         <Text style={styles.linkText}>Add topic</Text>

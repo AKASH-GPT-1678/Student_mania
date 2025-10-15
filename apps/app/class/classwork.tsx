@@ -3,25 +3,31 @@ import React from 'react'
 import SafeScreenWrapper from '../wrapper/safescreenwrapper';
 import { useLocalSearchParams } from 'expo-router';
 import AssignmentForm from '../components/newclasswork';
+import { useSearchParams } from 'expo-router/build/hooks';
+import DatePicker from 'react-native-date-picker'
 const Classwork = () => {
   const [showForm, setShowForm] = React.useState(false);
-  const { form } = useLocalSearchParams();
+  const [dueDate, setDueDate] = React.useState(new Date());
+  const [open, setOpen] = React.useState(false)
+  const form = useSearchParams().get('form');
+  const classId = useSearchParams().get('classId');
 
 
 
   React.useEffect(() => {
 
+
     if (form) setShowForm(true);
 
   }, [])
 
-  if (showForm) return <AssignmentForm />;
+  if (showForm) return <AssignmentForm classIdd='' />;
 
 
   return (
     <SafeScreenWrapper >
       <View >
-<AssignmentForm />
+        <Text>Classwork</Text>
       </View>
     </SafeScreenWrapper>
   )

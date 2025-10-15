@@ -188,7 +188,7 @@ const SignInn = () => {
                 <View style={styles.brand}>
                     <Text className='font-bold text-blue-600' onPress={
                         () =>
-                            router.push("/class")
+                            router.push('/brandsign')
                     }>Brand SignIn</Text>
 
                 </View>
