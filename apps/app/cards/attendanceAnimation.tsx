@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
 
         alignItems: "center",
         backgroundColor: "white",
-        height: "100%"
+    
     },
     halfCircle: {
         marginTop: 100,

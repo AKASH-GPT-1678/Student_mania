@@ -21,10 +21,7 @@ const Classwork = () => {
   return (
     <SafeScreenWrapper >
       <View >
-        <Text>IndexPage</Text>
-        <Pressable onPress={() => setShowForm(true)}>
-          <Text>New Classwork</Text>
-        </Pressable>
+<AssignmentForm />
       </View>
     </SafeScreenWrapper>
   )

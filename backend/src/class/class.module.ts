@@ -4,9 +4,15 @@ import { ClassController } from './class.controller';
 import { PrismaService } from 'prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { AppService } from 'src/app.service';
-
+import { MulterModule } from '@nestjs/platform-express';
 @Module({
+  imports: [
+    MulterModule.register({
+        dest: './uploads', // temporary upload directory
+    }),
+  ],
+
   controllers: [ClassController],
-  providers: [ClassService,PrismaService,JwtService,AppService],
+  providers: [ClassService, PrismaService, JwtService, AppService],
 })
-export class ClassModule {}
+export class ClassModule { }

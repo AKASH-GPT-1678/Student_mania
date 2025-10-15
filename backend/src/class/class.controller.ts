@@ -12,15 +12,14 @@ export class ClassController {
   constructor(private readonly classService: ClassService, private readonly appservice: AppService) { }
 
   @Post('attendance')
-  // @UseGuards(JwtGuard)
   @UseInterceptors(FileInterceptor('file'))
   //@ts-ignore
   async createAttendace(@UploadedFile() file: Express.Multer.File) {
-    console.log(file);
-    if (!file.originalname.endsWith(".csv")) {
-      throw new BadRequestException("Only CSV files are allowed to process");
+    console.log("I AM FILE", file);
+    // if (!file.originalname.endsWith(".csv")) {
+    //   throw new BadRequestException("Only CSV files are allowed to process");
 
-    };
+    // };
 
 
     const response = await this.classService.processAttendance(file);
@@ -96,18 +95,21 @@ export class ClassController {
   }
 
   @Post('assignments')
-  @UseInterceptors(FileInterceptor('file'))
   @UseGuards(JwtGuard)
+  @UseInterceptors(FileInterceptor('file'))
   async createAssignments(
     @Req() req,
-    @Body() data: CreateAssignmentDto,
     //@ts-ignore
     @UploadedFile() file: Express.Multer.File,
   ) {
     const userId = req.user?.sub;
+    console.log(" i am file", file)
     if (!userId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-    }
+    };
+
+
+    const data: CreateAssignmentDto = req.body;
 
 
     let attachments: string[] = [];
@@ -117,7 +119,7 @@ export class ClassController {
     }
 
 
-    data.attachments = attachments;
+    
 
 
     const assignments = await this.classService.createAssignments(data, userId);

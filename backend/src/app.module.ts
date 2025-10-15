@@ -12,6 +12,7 @@ import { BrandsModule } from './brands/brands.module';
 import { PaymentModule } from './payment/payment.module';
 
 import { ClassModule } from './class/class.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 
 @Resolver()

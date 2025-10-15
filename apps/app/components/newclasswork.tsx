@@ -26,30 +26,33 @@ export default function AssignmentForm() {
     const [selectedRecipients, setSelectedRecipients] = useState(['Akash', 'All students']);
     const token = useAppSelector((state) => state.user.token);
 
-    const pickDocument = async () => {
-        try {
-            const res: any = await DocumentPicker.getDocumentAsync({
-                copyToCacheDirectory: true,
-                type: '*/*',
-            });
+const pickDocument = async () => {
+  try {
+    const res = await DocumentPicker.getDocumentAsync({
+      copyToCacheDirectory: true,
+      type: '*/*',
+    });
 
-            if (res.type === 'cancel') {
-                console.log('User cancelled');
-                return;
-            }
+    // Check if user cancelled
+    if (res.canceled) {
+      console.log('User cancelled');
+      return;
+    }
 
-            if (res.size && res.size > 5 * 1024 * 1024) {
-                Alert.alert('File too large', 'Please select a file smaller than 5 MB');
-                return;
-            }
+    // Access the first asset from the assets array
+    const pickedFile = res.assets[0];
 
-            setFile(res);
-            Alert.alert('File selected', `File: ${res.name}`);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    if (pickedFile.size && pickedFile.size > 5 * 1024 * 1024) {
+      Alert.alert('File too large', 'Please select a file smaller than 5 MB');
+      return;
+    }
 
+    setFile(pickedFile);
+    Alert.alert('File selected', `File: ${pickedFile.name}`);
+  } catch (error) {
+    console.error(error);
+  }
+};
     const toggleRecipient = (name: string) => {
         setSelectedRecipients(prev =>
             prev.includes(name) ? prev.filter(p => p !== name) : [...prev, name]
@@ -62,46 +65,36 @@ export default function AssignmentForm() {
 
 
 
-    const handleSubmit = async () => {
-        const formData = new FormData();
-        const fileToUpload = {
-            uri: file.uri,
-            type: file.type || 'application/octet-stream',
-            name: file.name || 'document',
-        };
+const handleSubmit = async () => {
+  const formData = new FormData();
 
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('dueDate', dueDate);
-        formData.append('classId', classId);
-        formData.append('file', fileToUpload as any);
+  if (file) {
+    // React Native FormData expects the file object in this specific format
+    formData.append("file", {
+      uri: file.uri,
+      type: file.mimeType || file.type || "application/octet-stream",
+      name: file.name || "upload",
+    } as any);
+  }
 
-        try {
+  formData.append("title", title);
+  formData.append("description", description);
+  formData.append("dueDate", dueDate);
+  formData.append("classId", classId);
 
-            const response = await axios.post(`${ENV.BASE_URL}/class/assignments`, formData, {
-                headers: {
+  try {
+    const response = await axios.post(`${ENV.BASE_URL}/class/assignments`, formData, {
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data', // Add this header
+      },
+    });
 
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            console.log(response.data);
-
-            if (response.status === 201) {
-                Alert.alert('Success', 'Assignment created successfully!');
-            }
-
-
-
-
-        } catch (error) {
-            console.error(error);
-
-
-        }
-
-
-
-    };
+    console.log("Upload success:", response.data);
+  } catch (err: any) {
+    console.log("Upload error:", err.response?.data || err.message);
+  }
+};
 
     return (
         <SafeAreaView style={styles.safe}>
