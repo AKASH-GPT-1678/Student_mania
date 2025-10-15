@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
 import { Drawer } from 'expo-router/drawer';
+import ClassBanner from "../components/classbanner";
 
 export default function TabsLayout() {
     return (
@@ -19,7 +20,7 @@ export default function TabsLayout() {
                 }}
             />
             <Drawer.Screen
-                name="subjects" 
+                name="subjects"
                 options={{
                     drawerLabel: 'Subjects',
                     title: 'subjects',
@@ -27,21 +28,44 @@ export default function TabsLayout() {
                 }}
             />
             <Drawer.Screen
-                name="onboarding" 
+                name="onboarding"
                 options={{
                     drawerLabel: 'User',
                     title: 'overview',
                     drawerActiveBackgroundColor: "white",
                 }}
             /> <Drawer.Screen
-                name="attendance" 
+                name="attendance"
                 options={{
                     drawerLabel: 'Attendance',
                     title: 'Attendance',
                     drawerActiveBackgroundColor: "white",
-                 
+
                 }}
-               
+
+            />
+            <Drawer.Screen
+                name="classes"
+
+
+                options={{
+                    drawerLabel: 'Classes',
+                    title: 'Classes',
+                    drawerActiveBackgroundColor: "white",
+
+
+                }}
+
+            />
+            <Drawer.Screen
+                name="offers"
+
+                options={{
+                    drawerLabel: 'Offers',
+                    title: 'Offers',
+                    drawerActiveBackgroundColor: "white",
+                    headerShown: false
+                }}
             />
         </Drawer>
 
