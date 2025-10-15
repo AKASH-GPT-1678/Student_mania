@@ -38,7 +38,7 @@ const opportunitiesData = [
 
 const OppoutunitesItem = () => {
     const renderItem = ({ item }: any) => (
-        <View className="bg-white rounded-2xl shadow-sm p-4 mb-4 border border-gray-200 mx-3">
+        <View className="bg-white rounded-2xl  shadow-sm p-4 mb-4 border border-gray-200 ">
             <View className="flex-row items-center gap-3">
                 <Image source={{ uri: item.image }} className="rounded-full h-14 w-14" />
                 <View>
@@ -77,9 +77,9 @@ const OppoutunitesItem = () => {
                         UI/UX Design
 
                     </Text>
-                 
+
                 </View>
-                   <Ionicons name="arrow-forward-circle" size={50} color="black" />
+                <Ionicons name="arrow-forward-circle" size={50} color="black" />
 
             </View>
         </View>
