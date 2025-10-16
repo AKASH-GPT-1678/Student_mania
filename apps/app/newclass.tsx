@@ -44,15 +44,15 @@ const NewClass = () => {
     };
     return (
         <View>
-            <View className='bg-gray-300'>
-                <View className='bg-gray-300 flex flex-row justify-between items-center p-6 mt-10'>
+            <View className='bg-gray-200'>
+                <View className='bg-gray-200 flex flex-row justify-between items-center p-6 mt-10'>
                     <View className='flex flex-row gap-3'>
                         <Ionicons name="arrow-back" size={24} color="black" />
                         <Text className='text-2xl '>Create class</Text>
 
                     </View>
                     <View className='flex flex-row gap-2 items-center'>
-                        <Button mode="contained" buttonColor="#468FCC" className="px-4" onPress={handleSubmit}>
+                        <Button mode="contained"  className="px-4 bg-blue-500 " onPress={handleSubmit}>
                             Create
                         </Button>
                         <Entypo name="dots-three-vertical" size={24} color="black" />

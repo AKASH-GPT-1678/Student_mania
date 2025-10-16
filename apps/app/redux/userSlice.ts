@@ -3,12 +3,14 @@ import {createSlice , PayloadAction} from "@reduxjs/toolkit";
 interface UserState{
 
     id : string,
-    token  : string | null
+    token  : string | null,
+    isLoggedIn : boolean
 }
 
 const initialState : UserState = {
     id : "",
-    token : null
+    token : null,
+    isLoggedIn : false
 };
 
 
@@ -19,10 +21,12 @@ const userSlice = createSlice({
         login : (state , action : PayloadAction<{id : string , token : string}>) => {
             state.id = action.payload.id;
             state.token = action.payload.token;
+            state.isLoggedIn = true;
         },
         logout : (state) => {
             state.id = "";
             state.token = null;
+            state.isLoggedIn = false;
         }
     }
 });

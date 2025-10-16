@@ -57,8 +57,9 @@ const SignInn = () => {
 
 
             if (response?.data?.success) {
-                Alert.alert("Sucessfull SigniN ");
+                Alert.alert("Sucessfull Signin ");
                 dispatch(login({ id: response.data.id, token: response.data.access_token }));
+                router.push('/');
 
                 return { success: true, data: response.data };
             } else {

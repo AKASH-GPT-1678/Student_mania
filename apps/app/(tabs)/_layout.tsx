@@ -45,7 +45,7 @@ export default function TabsLayout() {
 
             />
             <Drawer.Screen
-                name="classes"
+                name="class"
 
 
                 options={{
@@ -63,6 +63,16 @@ export default function TabsLayout() {
                 options={{
                     drawerLabel: 'Offers',
                     title: 'Offers',
+                    drawerActiveBackgroundColor: "white",
+                    headerShown: false
+                }}
+            />
+             <Drawer.Screen
+                name="settings"
+
+                options={{
+                    drawerLabel: 'Settings',
+                    title: 'Settings',
                     drawerActiveBackgroundColor: "white",
                     headerShown: false
                 }}
