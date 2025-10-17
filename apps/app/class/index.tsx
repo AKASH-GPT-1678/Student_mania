@@ -53,6 +53,7 @@ const ClassWork = () => {
 
   const { data, loading, error } = useFetch(() => fetchClass(), classId ? true : false);
 
+
   if (loading) return <LoadingScreen />;
 
   if (error) return <ProductNotFound />
@@ -83,22 +84,43 @@ const ClassWork = () => {
             marginBottom: 10
           }}
         >
-          {/* <ClassBanner /> */}
+          {
+            data && <ClassBanner className={data.name} imgUrl={data.image} teacherName={data.subject} classDescription={data.subject} />
+          }
         </View>
 
-        <View className='px-4 py-4  ' style={{ backgroundColor: "#D5DBE3" }}>
-          <TouchableOpacity style={{ padding: 10, backgroundColor: "#2784F5" }} className='text-center rounded-xl'
-            onPress={() => router.push({
-              pathname: "/class/classwork",
-              params: { form: 'true' }
-            })}
-
-
+        <View className='px-4 py-4' style={{ backgroundColor: "#D5DBE3" }}>
+          <TouchableOpacity
+            style={{ padding: 10, backgroundColor: "#2784F5" }}
+            className='text-center rounded-xl'
+            onPress={() =>
+              router.push({
+                pathname: "/class/classwork",
+                params: { form: 'true' }
+              })
+            }
           >
-            <Text className='text-center'>New Classwork</Text>
+            <Text className='text-center text-white'>New Classwork</Text>
+          </TouchableOpacity>
 
+          <TouchableOpacity
+            style={{
+              padding: 10,
+              backgroundColor: "#2784F5",
+              marginTop: 10,
+            }}
+            className='text-center rounded-xl'
+            onPress={() =>
+              router.push({
+                pathname: '/class/newannouncement',
+                params: { classId: data.id }
+              })
+            }
+          >
+            <Text className='text-center text-white'>New Announcement</Text>
           </TouchableOpacity>
         </View>
+
 
         <View style={{ paddingHorizontal: 12, height: "100%", backgroundColor: "#D5DBE3" }}>
           <FlatList
