@@ -32,7 +32,7 @@ const Class = () => {
           renderItem={({ item ,index}) => (
              <TouchableOpacity onPress={() => router.push({
               pathname :"/class",
-              params: { id: item.id }
+              params: { 'classId': item.id }
              })}>
 
 

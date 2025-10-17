@@ -1,66 +1,68 @@
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { use } from 'react';
 import SafeScreenWrapper from '../wrapper/safescreenwrapper';
 import ClassBanner from '../components/classbanner';
 import AnnouncementCard from '../components/announcements';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import useFetch, { loadClass } from '../hooks/loadClass';
 import { useAppSelector } from '../redux/reduxhooks';
 import { ENV } from '../utils/ENV';
 import axios from 'axios';
 import LoadingScreen from '../components/loadingScreen';
 import ProductNotFound from '../components/not-found';
+import { useSearchParams } from 'expo-router/build/hooks';
+import { ClassData } from '../types/loadData';
 
 ;
 
 const ClassWork = () => {
   const token = useAppSelector((state) => state.user.token);
-  const [announcements, setAnnouncements] = React.useState<any>(null);
+  const [classData, setClassData] = React.useState<ClassData[] | null>(null);
   const [announceLoading, setAnnounceLoading] = React.useState(false);
 
+  const searchParams = useSearchParams();
 
+  const classId = searchParams.get('classId');
 
-
-
-
-  const { data, loading, error } = useFetch(() => loadClass(token as string), true);
-
-  async function loadAnnouncements() {
-    if (!data?.id) return;
-
-    setAnnounceLoading(true);
+  const fetchClass = async () => {
 
     try {
-      const response = await axios.get(
-        `${ENV.BASE_URL}/api/class/announcements/${data.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(response.data);
+      const response = await axios.get(`${ENV.BASE_URL}/api/class/load/${classId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      if (response.data) {
-        setAnnouncements(response.data);
-      }
-    } catch (error: any) {
-      console.error('Failed to load announcements:', error.message || error);
-    } finally {
-      setAnnounceLoading(false);
+
+
+      return response.data;
+
+    } catch (error) {
+      console.error("Error fetching class:", error);
+
+      return null;
     }
   };
 
 
 
-  React.useEffect(() => {
-    loadAnnouncements()
 
-  }, [data])
+  if (!classId) return <ProductNotFound />
 
-  if (loading) return (<LoadingScreen />);
 
-  if (error) return (<ProductNotFound />);
+
+  const { data, loading, error } = useFetch(() => fetchClass(), classId ? true : false);
+
+  if (loading) return <LoadingScreen />;
+
+  if (error) return <ProductNotFound />
+
+
+
+
+
+
+
 
 
 
@@ -100,15 +102,15 @@ const ClassWork = () => {
 
         <View style={{ paddingHorizontal: 12, height: "100%", backgroundColor: "#D5DBE3" }}>
           <FlatList
-            data={announcements}
+            data={classData}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <AnnouncementCard
-                type={item.category}
-                title={item.title}
+                type={item.subject}
+                title={item.subject}
 
-                announcement={item.description}
-                time={item.time}
+                announcement={item.subject}
+                time={item.subject}
               />
             )}
             ItemSeparatorComponent={() => <View style={{ height: 10 }} />}

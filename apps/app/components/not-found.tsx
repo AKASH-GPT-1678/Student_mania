@@ -2,8 +2,10 @@ import { StyleSheet, View, Text, Pressable } from 'react-native'
 import React from 'react';
 import { Image } from 'react-native';
 import { router } from 'expo-router';
+import SafeScreenWrapper from '../wrapper/safescreenwrapper';
 const ProductNotFound = () => {
     return (
+        <SafeScreenWrapper>
         <View className='flex flex-col items-center justify-center '>
             <Image source={require("../../assets/images/error.png")} alt="not-found-icon" className='h-48 w-72' />
             <Text className='font-bold text-3xl text-black  mt-4'>No Such Product Found</Text>
@@ -26,6 +28,7 @@ const ProductNotFound = () => {
             </Pressable>
 
         </View>
+        </SafeScreenWrapper>
     )
 }
 
