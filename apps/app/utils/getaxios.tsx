@@ -21,6 +21,7 @@ export const useGetAxios = (apiUrl: string) => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log(response.data);
         setData(response.data);
       } catch (err: any) {
         console.error("❌ Axios request failed:", err.response?.data || err.message);

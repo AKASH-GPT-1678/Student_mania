@@ -81,7 +81,7 @@ const ClassWork = () => {
             marginBottom: 10
           }}
         >
-          <ClassBanner />
+          {/* <ClassBanner /> */}
         </View>
 
         <View className='px-4 py-4  ' style={{ backgroundColor: "#D5DBE3" }}>

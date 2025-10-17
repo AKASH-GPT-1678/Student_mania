@@ -7,6 +7,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { useAppSelector } from './redux/reduxhooks';
 import { ENV } from './utils/ENV';
 import axios from 'axios';
+import { router } from 'expo-router';
 const NewClass = () => {
     const [className, setClassName] = React.useState('');
     const [section, setSection] = React.useState('');
@@ -19,7 +20,7 @@ const NewClass = () => {
 
         try {
             const response = await axios.post(
-                `${ENV.BASE_URL}/class/create`, 
+                `${ENV.BASE_URL}/api/class/create`, 
                 payload,
                 {
                     headers: {
@@ -46,8 +47,8 @@ const NewClass = () => {
         <View>
             <View className='bg-gray-200'>
                 <View className='bg-gray-200 flex flex-row justify-between items-center p-6 mt-10'>
-                    <View className='flex flex-row gap-3'>
-                        <Ionicons name="arrow-back" size={24} color="black" />
+                    <View className='flex flex-row gap-5 items-end'>
+                        <Ionicons name="arrow-back" size={24} color="black" onPress={()=>router.back()}/>
                         <Text className='text-2xl '>Create class</Text>
 
                     </View>

@@ -9,12 +9,12 @@ export class AppService {
 
   constructor(private readonly prisma: PrismaService) {
     // Initialize AWS S3
-    this.bucketName = process.env.AWS_S3_BUCKET ?? 'bookly-app';
+    this.bucketName = process.env.AWS_S3_BUCKET ?? 'studiess';
 
     this.s3 = new AWS.S3({
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,  
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY, 
-      region: process.env.AWS_REGION ?? 'eu-north-1',
+      region: process.env.AWS_REGION ?? 'ap-south-1',
     });
   }
 
@@ -27,7 +27,7 @@ export class AppService {
     try {
       const params: AWS.S3.PutObjectRequest = {
         Bucket: this.bucketName,
-        Key: `${Date.now()}-${file.originalname}`, // ✅ unique name
+        Key: `${Date.now()}-${file.originalname}`,
         Body: file.buffer,
         ContentType: file.mimetype,
         ContentDisposition: 'inline',
@@ -41,9 +41,7 @@ export class AppService {
     }
   }
 
-  /**
-   * Generic upload helper (for manual file buffers)
-   */
+
   async s3_upload(
     fileBuffer: Buffer,
     bucket: string,
