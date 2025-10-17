@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, Touchable, View,TouchableOpacity } from 'react-native';
 import React from 'react';
 import { useGetAxios } from './utils/getaxios';
 import SafeScreenWrapper from './wrapper/safescreenwrapper';
@@ -6,6 +6,7 @@ import ProductNotFound from './components/not-found';
 import LoadingScreen from './components/loadingScreen';
 import ClassBanner from './components/classbanner';
 import { ClassData } from './types/loadData';
+import { router } from 'expo-router';
 
 const Class = () => {
   const imageUrls = [
@@ -29,9 +30,15 @@ const Class = () => {
         <FlatList
           data={data as ClassData[]}
           renderItem={({ item ,index}) => (
+             <TouchableOpacity onPress={() => router.push({
+              pathname :"/class",
+              params: { id: item.id }
+             })}>
 
 
             <ClassBanner className={item.name} imgUrl={imageUrls[index]} teacherName={item.subject} classDescription={item.subject} />
+
+            </TouchableOpacity>
           )}
           keyExtractor={(item) => item.id}
         // ListHeaderComponent={

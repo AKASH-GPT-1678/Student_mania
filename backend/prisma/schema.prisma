@@ -15,14 +15,16 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  name      String
-  email     String    @unique
-  password  String
-  subjects  Subject[]
-  classes   Classes[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id       String    @id @default(uuid())
+  name     String
+  email    String    @unique
+  password String
+  subjects Subject[]
+  classes  Classes[]  @relation("ClassOwner") 
+  memberOf Classes[] @relation("ClassMembers") // Clas
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Subject {
@@ -79,11 +81,19 @@ model Classes {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   userId        String
-  user          User           @relation(fields: [userId], references: [id])
+  user          User           @relation("ClassOwner", fields: [userId], references: [id])
+  members       User[]         @relation("ClassMembers")
   adminList     String[]
   announcements Announcement[]
 
   assignments Assignment[]
+
+
+}
+
+model Member {
+  id        String  @id @default(uuid())
+  classesId String?
 }
 
 model Announcement {

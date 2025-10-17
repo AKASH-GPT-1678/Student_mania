@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -6,9 +6,13 @@ import { CreateAssignmentDto } from './dto/create-assignment-dto';
 import * as FormData from 'form-data';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as bcrypt from 'bcrypt';
 import fetch from 'node-fetch';
 import { CreateAnnouncementDto } from './dto/create-announcement';
 import { NotAdminError } from 'src/errors/not-admin';
+import { JoinGroupDto } from './dto/join-group.dto';
+import { LeaveGroupDto } from './dto/leave-group.dto';
+import { MakeAdminDto } from './dto/make-admin.dto';
 @Injectable()
 export class ClassService {
   process_url;
@@ -136,7 +140,7 @@ export class ClassService {
 
     return announcement;
   };
-    async getAnnouncementsByClass(classId: string, userId?: string) {
+  async getAnnouncementsByClass(classId: string, userId?: string) {
     // Optional: check if class exists
     const classExists = await this.prisma.classes.findUnique({
       where: { id: classId },
@@ -217,5 +221,131 @@ export class ClassService {
       throw new NotFoundException(`Class with id ${id} not found`);
     }
     return classData;
+  }
+
+
+  
+  async joinGroup(joinGroup: JoinGroupDto, userId: string) {
+    const { classId, password } = joinGroup;
+
+    // Step 1: Find the class with members
+    const classData = await this.prisma.classes.findUnique({
+      where: { id: classId },
+      include: { members: true },
+    });
+
+    if (!classData) {
+      throw new NotFoundException('Class not found');
+    }
+
+    // Step 2: Verify password
+    const isPasswordValid = await bcrypt.compare(password, classData.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid class password');
+    }
+
+    // Step 3: Check if user is already a member
+    const isAlreadyMember = classData.members.some(member => member.id === userId);
+    if (isAlreadyMember) {
+      throw new BadRequestException('You are already a member of this class');
+    }
+
+    // Step 4: Add user to members
+    await this.prisma.classes.update({
+      where: { id: classId },
+      data: {
+        members: {
+          connect: { id: userId },
+        },
+      },
+    });
+
+    return {
+      message: 'Successfully joined the class',
+      classId: classData.id,
+      className: classData.name,
+    };
+  };
+
+  async leaveGroup(leaveGroup: LeaveGroupDto, userId: string) {
+    const { classId } = leaveGroup;
+
+
+    const classData = await this.prisma.classes.findUnique({
+      where: { id: classId },
+      include: { members: true },
+    });
+
+    if (!classData) {
+      throw new NotFoundException('Class not found');
+    }
+
+
+    const isMember = classData.members.some(member => member.id === userId);
+    if (!isMember) {
+      throw new BadRequestException('You are not a member of this class');
+    }
+
+    // Step 3: Remove user from members
+    await this.prisma.classes.update({
+      where: { id: classId },
+      data: {
+        members: {
+          disconnect: { id: userId },
+        },
+      },
+    });
+
+    return {
+      statusCode: 200,
+      message: 'Successfully left the class',
+      classId: classData.id,
+      className: classData.name,
+    };
+  }
+
+  async makeAdmin(dto: MakeAdminDto, requesterId: string) {
+    const { classId, targetUserId } = dto;
+
+    // Step 1: Fetch class
+    const classData = await this.prisma.classes.findUnique({
+      where: { id: classId },
+      include: { members: true },
+    });
+
+    if (!classData) {
+      throw new NotFoundException('Class not found');
+    }
+
+    // Step 2: Check if requester is an admin
+    if (!classData.adminList.includes(requesterId)) {
+      throw new ForbiddenException('Only admins can promote members');
+    }
+
+    // Step 3: Check if target user is a member
+    const isMember = classData.members.some(member => member.id === targetUserId);
+    if (!isMember) {
+      throw new BadRequestException('Target user is not a member of this class');
+    }
+
+    // Step 4: Check if target user is already an admin
+    if (classData.adminList.includes(targetUserId)) {
+      throw new BadRequestException('Target user is already an admin');
+    }
+
+    // Step 5: Add target user to adminList
+    const updatedClass = await this.prisma.classes.update({
+      where: { id: classId },
+      data: {
+        adminList: [...classData.adminList, targetUserId],
+      },
+    });
+
+    return {
+      statusCode: 200,
+      message: 'User promoted to admin successfully',
+      classId: updatedClass.id,
+      targetUserId,
+    };
   }
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Post, Req, UploadedFile, UseGuards, UseInterceptors, Body, HttpStatus, HttpCode, HttpException, Get, Param } from '@nestjs/common';
+import { BadRequestException, Controller, Post, Req, UploadedFile, UseGuards, UseInterceptors, Body, HttpStatus, HttpCode, HttpException, Get, Param, UnauthorizedException } from '@nestjs/common';
 import { JwtGuard } from 'src/jwt/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
@@ -8,6 +8,9 @@ import { ClassService } from './class.service';
 import { AppService } from 'src/app.service';
 import { CreateAssignmentDto } from './dto/create-assignment-dto';
 import { CreateAnnouncementDto } from './dto/create-announcement';
+import { JoinGroupDto } from './dto/join-group.dto';
+import { LeaveGroupDto } from './dto/leave-group.dto';
+import { MakeAdminDto } from './dto/make-admin.dto';
 @Controller('api/class')
 export class ClassController {
   constructor(private readonly classService: ClassService, private readonly appservice: AppService) { }
@@ -163,6 +166,49 @@ export class ClassController {
 
     const assignments = await this.classService.createAssignments(data, userId);
     return assignments;
+  };
+
+  @UseGuards(JwtGuard)
+  @Post('join')
+  @HttpCode(HttpStatus.OK) 
+  async joinClass(@Body() joinGroup: JoinGroupDto, @Req() req) {
+    const userId = req.user?.sub;
+    if (!userId) {
+      throw new UnauthorizedException('User not authenticated'); // 401
+    }
+
+    const result = await this.classService.joinGroup(joinGroup, userId);
+
+
+    return {
+      statusCode: HttpStatus.OK,
+      ...result
+    };
+  };
+
+  @UseGuards(JwtGuard)
+  @Post('leave')
+  @HttpCode(HttpStatus.OK) // 200 on success
+  async leaveClass(@Body() leaveGroup: LeaveGroupDto, @Req() req) {
+    const userId = req.user?.sub;
+    if (!userId) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+
+    return this.classService.leaveGroup(leaveGroup, userId);
+  };
+
+  
+  @UseGuards(JwtGuard)
+  @Post('make-admin')
+  @HttpCode(HttpStatus.OK) // 200 on success
+  async makeAdmin(@Body() dto: MakeAdminDto, @Req() req) {
+    const requesterId = req.user?.sub;
+    if (!requesterId) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+
+    return this.classService.makeAdmin(dto, requesterId);
   }
 
 
