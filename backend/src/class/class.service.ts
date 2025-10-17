@@ -209,22 +209,74 @@ export class ClassService {
       console.error('Error creating assignment:', error);
       throw new BadRequestException('Something went wrong while creating the assignment');
     }
+  };
+
+  async loadUserClasses(userId: string) {
+    // Check if user exists
+    const userExists = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userExists) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+
+    const userClasses = await this.prisma.classes.findMany({
+      where: {
+        OR: [
+          { userId: userId }, // creator of class
+          { members: { some: { id: userId } } }, // or member of class
+        ],
+      },
+      include: {
+        user: true,
+        members: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    if (!userClasses.length) {
+      throw new NotFoundException(`No classes found for user with id ${userId}`);
+    }
+
+    return userClasses;
   }
 
 
 
-  async loadClass(id: string) {
-    const classData = await this.prisma.classes.findMany({
-      where: { userId: id },
+
+  async loadClass(userId: string, classId: string) {
+    const classData = await this.prisma.classes.findUnique({
+      where: { id: classId },
+      include: { members: true, user: true },
     });
     if (!classData) {
-      throw new NotFoundException(`Class with id ${id} not found`);
+      throw new NotFoundException(`Class with id ${classId} not found`);
+    };
+    const isValidUser = await this.prisma.user.findUnique({
+      where: {
+        id: userId
+      }
+    });
+
+    if (!isValidUser) {
+      throw new NotFoundException(`User with id ${userId} not found`);
     }
+
+    const isMember = classData.members.some(member => member.id === userId);
+    const isCreator = classData.user.id === userId;
+    if (!isMember && !isCreator) {
+      throw new BadRequestException('You are not a member of this class');
+    };
+
     return classData;
   }
 
 
-  
+
   async joinGroup(joinGroup: JoinGroupDto, userId: string) {
     const { classId, password } = joinGroup;
 

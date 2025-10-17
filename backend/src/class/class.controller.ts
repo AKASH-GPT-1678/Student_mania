@@ -84,9 +84,9 @@ export class ClassController {
   };
 
 
-  @Get('load')
+  @Get('load/:classId')
   @UseGuards(JwtGuard)
-  async getOneClass(@Req() req) {
+  async getOneClass(@Param('classId') classId: string, @Req() req) {
     const userId = req.user?.sub;
     if (!userId) {
       throw new HttpException(
@@ -94,7 +94,7 @@ export class ClassController {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    const oneClass = await this.classService.getOneClass(userId);
+    const oneClass = await this.classService.loadClass(userId , classId);
     return oneClass;
 
   }
@@ -132,7 +132,7 @@ export class ClassController {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    const classes = await this.classService.loadClass(userId);
+    const classes = await this.classService.loadUserClasses(userId);
     return classes;
   }
 
@@ -170,7 +170,7 @@ export class ClassController {
 
   @UseGuards(JwtGuard)
   @Post('join')
-  @HttpCode(HttpStatus.OK) 
+  @HttpCode(HttpStatus.OK)
   async joinClass(@Body() joinGroup: JoinGroupDto, @Req() req) {
     const userId = req.user?.sub;
     if (!userId) {
@@ -198,7 +198,7 @@ export class ClassController {
     return this.classService.leaveGroup(leaveGroup, userId);
   };
 
-  
+
   @UseGuards(JwtGuard)
   @Post('make-admin')
   @HttpCode(HttpStatus.OK) // 200 on success
