@@ -147,12 +147,6 @@ export class ClassService {
     });
     if (!classExists) throw new NotFoundException(`Class with ID ${classId} not found`);
 
-    // // Optional: check if user belongs to class
-    // if (userId && !classExists.adminList.includes(userId) && classExists.studentList?.includes(userId) === false) {
-    //   throw new ForbiddenException("User does not belong to this class");
-    // }
-
-    // Fetch announcements ordered by newest first
     const announcements = await this.prisma.announcement.findMany({
       where: { classId },
       orderBy: { createdAt: 'desc' },
@@ -251,7 +245,7 @@ export class ClassService {
   async loadClass(userId: string, classId: string) {
     const classData = await this.prisma.classes.findUnique({
       where: { id: classId },
-      include: { members: true, user: true },
+      include: { members: true, user: true ,assignments:true,announcements:true},
     });
     if (!classData) {
       throw new NotFoundException(`Class with id ${classId} not found`);

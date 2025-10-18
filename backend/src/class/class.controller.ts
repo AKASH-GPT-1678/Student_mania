@@ -3,7 +3,7 @@ import { JwtGuard } from 'src/jwt/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
 import { CreateClassDto } from './dto/create-class.dto';
-
+import { memoryStorage } from 'multer';
 import { ClassService } from './class.service';
 import { AppService } from 'src/app.service';
 import { CreateAssignmentDto } from './dto/create-assignment-dto';
@@ -11,9 +11,14 @@ import { CreateAnnouncementDto } from './dto/create-announcement';
 import { JoinGroupDto } from './dto/join-group.dto';
 import { LeaveGroupDto } from './dto/leave-group.dto';
 import { MakeAdminDto } from './dto/make-admin.dto';
+import { Classes } from '@prisma/client';
 @Controller('api/class')
 export class ClassController {
-  constructor(private readonly classService: ClassService, private readonly appservice: AppService) { }
+  bucketName = process.env.AWS_BUCKET_NAME;
+  constructor(private readonly classService: ClassService, private readonly appservice: AppService) {
+    this.bucketName = process.env.AWS_BUCKET_NAME;
+  }
+
 
   @Post('attendance')
   @UseInterceptors(FileInterceptor('file'))
@@ -94,10 +99,10 @@ export class ClassController {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    const oneClass = await this.classService.loadClass(userId , classId);
+    const oneClass = await this.classService.loadClass(userId, classId);
     return oneClass;
 
-  }
+  };
   @UseGuards(JwtGuard)
   @Get('announcements/:classId')
   @HttpCode(200) // sets HTTP status to 200 OK
@@ -138,7 +143,7 @@ export class ClassController {
 
   @Post('assignments')
   @UseGuards(JwtGuard)
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
   async createAssignments(
     @Req() req,
     //@ts-ignore
@@ -146,6 +151,7 @@ export class ClassController {
     @Body() data: CreateAssignmentDto
   ) {
     const userId = req.user?.sub;
+    console.log(req.user);
     console.log(" i am file", file)
     if (!userId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
@@ -156,7 +162,7 @@ export class ClassController {
 
     let attachments: string[] = [];
     if (file) {
-      const fileUrl = await this.appservice.uploadFile(file);
+      const fileUrl = await this.appservice.s3_upload(file.buffer, this.bucketName as string, file.originalname, file.mimetype);
       attachments.push(fileUrl);
     }
 

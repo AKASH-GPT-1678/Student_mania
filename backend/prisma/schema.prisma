@@ -91,10 +91,7 @@ model Classes {
 
 }
 
-model Member {
-  id        String  @id @default(uuid())
-  classesId String?
-}
+
 
 model Announcement {
   id          String   @id @default(uuid())

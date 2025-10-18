@@ -17,6 +17,7 @@ import axios from 'axios';
 import { ENV } from '../utils/ENV';
 import { useAppSelector } from '../redux/reduxhooks';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { router } from 'expo-router';
 export default function AssignmentForm({classIdd } : {classIdd : string}) {
     const [title, setTitle] = React.useState('');
     const [description, setDescription] = React.useState('');
@@ -114,7 +115,7 @@ export default function AssignmentForm({classIdd } : {classIdd : string}) {
             <View style={styles.container}>
 
                 <View style={styles.topBar}>
-                    <TouchableOpacity style={styles.iconButton}>
+                    <TouchableOpacity style={styles.iconButton} onPress={()=>router.back()}>
                         <Text style={styles.iconText}>✕</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.assignButton} onPress={()=>handleSubmit()}>

@@ -5,7 +5,7 @@ import ClassBanner from '../components/classbanner';
 import AnnouncementCard from '../components/announcements';
 import { router, useLocalSearchParams } from 'expo-router';
 import useFetch, { loadClass } from '../hooks/loadClass';
-import { useAppSelector } from '../redux/reduxhooks';
+import { useAppDispatch, useAppSelector } from '../redux/reduxhooks';
 import { ENV } from '../utils/ENV';
 import axios from 'axios';
 import LoadingScreen from '../components/loadingScreen';
@@ -14,49 +14,36 @@ import { useSearchParams } from 'expo-router/build/hooks';
 import { ClassData } from '../types/loadData';
 
 ;
+import { fetchClassById } from '../redux/classReducer';
 
 const ClassWork = () => {
   const token = useAppSelector((state) => state.user.token);
-  const [classData, setClassData] = React.useState<ClassData[] | null>(null);
+  const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
+  const [classDataa, setClassData] = React.useState<ClassData[] | null>(null);
   const [announceLoading, setAnnounceLoading] = React.useState(false);
+  const dispatch = useAppDispatch();
 
   const searchParams = useSearchParams();
 
   const classId = searchParams.get('classId');
 
-  const fetchClass = async () => {
-
-    try {
-      const response = await axios.get(`${ENV.BASE_URL}/api/class/load/${classId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-
-
-      return response.data;
-
-    } catch (error) {
-      console.error("Error fetching class:", error);
-
-      return null;
-    }
-  };
-
-
-
 
   if (!classId) return <ProductNotFound />
 
 
+  React.useEffect(() => {
+    if (!isLoggedIn) return;
+    dispatch(fetchClassById({ classId, token: token as string }));
+  }, [classId]);
 
-  const { data, loading, error } = useFetch(() => fetchClass(), classId ? true : false);
 
+
+  const { classData, loading, error } = useAppSelector((state) => state.class)
 
   if (loading) return <LoadingScreen />;
 
-  if (error) return <ProductNotFound />
+  if (error) return <ProductNotFound />;
+  if (!classData) return <ProductNotFound />
 
 
 
@@ -84,9 +71,9 @@ const ClassWork = () => {
             marginBottom: 10
           }}
         >
-          {
+          {/* {
             data && <ClassBanner className={data.name} imgUrl={data.image} teacherName={data.subject} classDescription={data.subject} />
-          }
+          } */}
         </View>
 
         <View className='px-4 py-4' style={{ backgroundColor: "#D5DBE3" }}>
@@ -113,7 +100,7 @@ const ClassWork = () => {
             onPress={() =>
               router.push({
                 pathname: '/class/newannouncement',
-                params: { classId: data.id }
+                // params: { classId: data.id }
               })
             }
           >
@@ -124,7 +111,7 @@ const ClassWork = () => {
 
         <View style={{ paddingHorizontal: 12, height: "100%", backgroundColor: "#D5DBE3" }}>
           <FlatList
-            data={classData}
+            data={classDataa}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <AnnouncementCard

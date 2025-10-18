@@ -5,10 +5,12 @@ import { PrismaService } from 'prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { AppService } from 'src/app.service';
 import { MulterModule } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 @Module({
   imports: [
     MulterModule.register({
-        dest: './uploads', // temporary upload directory
+      storage: memoryStorage(),
+      
     }),
   ],
 
