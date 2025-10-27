@@ -7,11 +7,21 @@ import { BadRequestException, ConflictException, InternalServerErrorException, N
 import { RegisterResponseDto, LoginUserDto } from 'src/auth/dto/auth-dto';
 import { genRatePassword, comparePassword } from './helpers/bcrypt';
 ;
+const genrals = {
+    "id": 1,
+    "code": "f9c2a7e4-1b23-4a56-9d78-ef9012cd3456",
+    "name": "General",
+    "description": "Covers general topics that do not belong to a specific subject category.",
+    "createdAt": "2025-10-27T12:00:00.000Z",
+    "updatedAt": "2025-10-27T12:00:00.000Z",
+    "userId": null
+}
+
 @Injectable()
 export class AuthService {
 
     constructor(
-   
+
         private jwtService: JwtService,
         private prisma: PrismaService
     ) {
@@ -43,6 +53,7 @@ export class AuthService {
                     password: hash.toString(),
                 },
             });
+            const generals= await this.addGenral(user.id);
             console.log(user);
             const response = new RegisterResponseDto();
             response.name = user.name;
@@ -64,9 +75,9 @@ export class AuthService {
     async loginUser(loginDto: LoginUserDto): Promise<RegisterResponseDto> {
         try {
             const { email, password } = loginDto;
-            console.log(email , password);
+            console.log(email, password);
 
- 
+
             if (!email || !password) {
                 throw new BadRequestException('Email and password are required');
             }
@@ -91,8 +102,8 @@ export class AuthService {
             response.name = user.name;
             response.email = user.email;
             response.id = user.id;
-           
-          
+
+
             response.success = true;
             response.message = 'Login successful';
 
@@ -123,5 +134,18 @@ export class AuthService {
             success: true,
             access_token: access_token
         }
+    };
+
+    async addGenral(userId : string) {
+        const general = await this.prisma.subject.create({
+            data:{
+                name : "General",
+                description : genrals.description,
+                userId : userId
+
+
+            }
+        });
+        return general;
     }
 }

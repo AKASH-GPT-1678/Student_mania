@@ -36,5 +36,33 @@ export class SubjectService {
       throw error;
 
     }
+  };
+  async loadAllSubjects(userId: string) {
+  try {
+    // Step 1: Check if user exists
+    const findUser = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!findUser) {
+      throw new NotFoundException('User not found');
+    }
+
+
+    const subjects = await this.prisma.subject.findMany({
+      where: {
+        userId: userId,
+      },
+      orderBy: {
+        createdAt: 'desc', 
+      },
+    });
+
+    return subjects;
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
+}
+
 }

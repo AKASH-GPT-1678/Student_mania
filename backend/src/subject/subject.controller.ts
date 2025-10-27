@@ -11,14 +11,24 @@ export class SubjectController {
 
   @UseGuards(JwtGuard)
   @Post('create')
-  create(@Req() req, @Body() data : CreateSubjectDto) {
+  create(@Req() req, @Body() data: CreateSubjectDto) {
     console.log(req.user);
     const id = req.user.sub;
     if (!id) {
       throw new NotFoundException('User not found');
     }
     return this.subjectService.create(data.name, id);
-  }
+  };
+
+  @UseGuards(JwtGuard)
+  @Get('loadSubjects')
+  loadAllSubjects(@Req() req) {
+    const id = req.user.sub;
+    if (!id) {
+      throw new NotFoundException('User not found');
+    }
+    return this.subjectService.loadAllSubjects(id);
+  };
 
 
 }

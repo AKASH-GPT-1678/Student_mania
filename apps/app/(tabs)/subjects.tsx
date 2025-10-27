@@ -5,9 +5,24 @@ import { subjectData } from "../tempdata/subject";
 import { useRouter } from "expo-router";
 import Entypo from '@expo/vector-icons/Entypo';
 import SubjectPopup from "../cards/subjectPopup";
+import { useAppSelector } from "../redux/reduxhooks";
+import { useGetAxios } from "../utils/getaxios";
+import ProductNotFound from "../components/not-found";
+import LoadingScreen from "../components/loadingScreen";
+import SubjectNotFound from "../components/no-subjects";
 const Subjects = () => {
   const [newSubject, setNewSubject] = React.useState(false);
+  const token = useAppSelector((state) => state.user.token)
+  const [subjects, setSubjectData] = React.useState([]);
   const router = useRouter();
+
+  const { data, error, loading } = useGetAxios('api/subject/loadSubjects');
+
+  if (error) return <SubjectNotFound />
+
+  if (loading) return <LoadingScreen />
+
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -16,7 +31,7 @@ const Subjects = () => {
       </View>
 
       <FlatList
-        data={subjectData}
+        data={data}
         keyExtractor={(_, index) => index.toString()}
         numColumns={2}
         contentContainerStyle={styles.flatList}
@@ -32,17 +47,17 @@ const Subjects = () => {
 
           >
             <SubjectCard
-              subName={item.subName}
-              subShortCut={item.subShortCut}
+              subName={item.name}
+              subShortCut={item.name.charAt(0) + item.name.charAt(item.name.length - 1)}
               color={item.color}
 
             />
           </TouchableOpacity>
         )}
       />
-    { newSubject &&  <View style={styles.subjectPop}>
+      {newSubject && <View style={styles.subjectPop}>
         <SubjectPopup onPress={() => setNewSubject(false)} />
-      </View> }
+      </View>}
     </View>
   );
 };
@@ -55,7 +70,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingHorizontal: 16,
     paddingTop: 16,
-    position : "relative"
+    position: "relative"
   },
   headerContainer: {
     width: '100%',
@@ -79,11 +94,11 @@ const styles = StyleSheet.create({
   row: {
     justifyContent: "space-between", // evenly spaces 2 items per row
   },
-  subjectPop : {
-    position : "absolute",
-    top : 200,
-    width : "100%",
-    alignSelf : "center"
+  subjectPop: {
+    position: "absolute",
+    top: 200,
+    width: "100%",
+    alignSelf: "center"
 
   }
 });

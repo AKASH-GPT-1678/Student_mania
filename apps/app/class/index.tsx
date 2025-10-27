@@ -87,6 +87,10 @@ const ClassWork = () => {
               })
             }
           >
+            <View>
+        
+             
+            </View>
             <Text className='text-center text-white'>New Classwork</Text>
           </TouchableOpacity>
 

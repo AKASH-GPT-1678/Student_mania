@@ -66,6 +66,7 @@ const SignUp = () => {
 
 
         } catch (error: any) {
+            Alert.alert("Something Went Wrong");
             console.error("Sign up failed:", error.response?.data || error.message);
         }
     };

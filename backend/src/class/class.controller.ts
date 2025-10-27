@@ -154,6 +154,7 @@ export class ClassController {
     console.log(req.user);
     console.log(" i am file", file)
     if (!userId) {
+      console.log("No user ID found in token");
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     };
 
