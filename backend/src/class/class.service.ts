@@ -7,12 +7,15 @@ import * as FormData from 'form-data';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as bcrypt from 'bcrypt';
+import * as stream from 'stream';
+
 import fetch from 'node-fetch';
 import { CreateAnnouncementDto } from './dto/create-announcement';
 import { NotAdminError } from 'src/errors/not-admin';
 import { JoinGroupDto } from './dto/join-group.dto';
 import { LeaveGroupDto } from './dto/leave-group.dto';
 import { MakeAdminDto } from './dto/make-admin.dto';
+import { AttendanceDto } from './dto/create-announcement';
 @Injectable()
 export class ClassService {
   process_url;
@@ -39,22 +42,22 @@ export class ClassService {
 
 
   //@ts-ignore
-  async processAttendance(file: Express.Multer.File) {
+  async processAttendance(file: Express.Multer.File) :Promise<AttendanceDto[]> {
     try {
       const formData = new FormData();
 
-      // If file is saved on disk
-      const filePath = path.resolve(file.path); // multer destination
-      formData.append('file', fs.createReadStream(filePath), {
+      const bufferStream = new stream.PassThrough();
+      bufferStream.end(file.buffer);
+
+      formData.append('file', bufferStream, {
         filename: file.originalname,
         contentType: file.mimetype,
       });
 
-      // Send to FastAPI
       const response = await fetch(this.process_url, {
         method: 'POST',
         body: formData,
-        headers: formData.getHeaders(), // important!
+        headers: formData.getHeaders(),
       });
 
       if (!response.ok) {
@@ -64,16 +67,39 @@ export class ClassService {
 
       const data = await response.json();
       console.log('✅ Server response:', data);
+      return data as AttendanceDto[];
 
-      // Delete the uploaded file after processing
-      fs.unlink(filePath, (err) => {
-        if (err) console.error('Failed to delete uploaded file:', err);
-      });
-
-      return data;
     } catch (error: any) {
       console.error('❌ Error processing attendance:', error.message || error);
       throw error;
+    }
+  };
+
+  async createAttendance(userId: string, attendanceData: AttendanceDto[]) {
+    try {
+
+      const records = attendanceData.map((item) => ({
+        date: new Date(item.Date),
+        lecture: item.Lecture,
+        day: item.Day,
+        time: item.Time,
+        month: new Date(item.Date).getMonth() + 1, 
+        year: new Date(item.Date).getFullYear(),
+        userId: userId,
+      }));
+
+   
+      const result = await this.prisma.attendance.createMany({
+        data: records,
+      });
+
+      return {
+        message: '✅ Attendance records created successfully',
+        count: result.count,
+      };
+    } catch (error) {
+      console.error('❌ Error creating attendance:', error);
+      throw new Error('Failed to create attendance records');
     }
   }
   async createClass(data: CreateClassDto) {
@@ -245,7 +271,7 @@ export class ClassService {
   async loadClass(userId: string, classId: string) {
     const classData = await this.prisma.classes.findUnique({
       where: { id: classId },
-      include: { members: true, user: true ,assignments:true,announcements:true},
+      include: { members: true, user: true, assignments: true, announcements: true },
     });
     if (!classData) {
       throw new NotFoundException(`Class with id ${classId} not found`);

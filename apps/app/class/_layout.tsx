@@ -1,7 +1,6 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import SafeScreenWrapper from "../wrapper/safescreenwrapper";
-import { SafeAreaView } from "react-native-safe-area-context";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 export default function RootLayout() {
   return (
 
@@ -67,6 +66,15 @@ export default function RootLayout() {
           title: "Settings",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings-outline" size={size} color={color} />
+          ),
+        }}
+      />
+         <Tabs.Screen
+        name="newannouncement"
+        options={{
+          title: "Announcements",
+          tabBarIcon: ({ color, size }) => (
+           <MaterialIcons name="announcement" size={24} color="#007AFF" />
           ),
         }}
       />

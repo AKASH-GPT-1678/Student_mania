@@ -8,7 +8,8 @@ import { router } from 'expo-router';
 import { ENV } from '../utils/ENV';
 import { useAppSelector } from '../redux/reduxhooks';
 interface Props {
-    onPress: () => void
+    onPress: () => void;
+  
 }
 const SubjectPopup = ({ onPress }: Props) => {
     const [subject, setSubject] = React.useState("");
@@ -27,7 +28,7 @@ const SubjectPopup = ({ onPress }: Props) => {
 
             const response = await axios.post(
                 `${ENV.BASE_URL}/api/subject/create`,
-                subjectData,
+                 { name: subject },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

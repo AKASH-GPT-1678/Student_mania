@@ -15,16 +15,32 @@ datasource db {
 }
 
 model User {
-  id       String    @id @default(uuid())
-  name     String
-  email    String    @unique
-  password String
-  subjects Subject[]
-  classes  Classes[]  @relation("ClassOwner") 
-  memberOf Classes[] @relation("ClassMembers") // Clas
+  id          String       @id @default(uuid())
+  name        String
+  email       String       @unique
+  password    String
+  subjects    Subject[]
+  classes     Classes[]    @relation("ClassOwner")
+  memberOf    Classes[]    @relation("ClassMembers") // Clas
+  attendances Attendance[] // 👈 One-to-ma
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Attendance {
+  id      String   @id @default(uuid())
+  date    DateTime 
+  lecture String
+  day     String
+  time    String
+  month   Int
+  year    Int
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  createdAt DateTime @default(now())
 }
 
 model Subject {
@@ -87,11 +103,7 @@ model Classes {
   announcements Announcement[]
 
   assignments Assignment[]
-
-
 }
-
-
 
 model Announcement {
   id          String   @id @default(uuid())

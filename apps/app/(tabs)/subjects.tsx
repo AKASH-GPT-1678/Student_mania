@@ -1,20 +1,37 @@
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from "react-native";
 import React from "react";
 import SubjectCard from "../cards/subjectcard";
-import { subjectData } from "../tempdata/subject";
 import { useRouter } from "expo-router";
 import Entypo from '@expo/vector-icons/Entypo';
 import SubjectPopup from "../cards/subjectPopup";
 import { useAppSelector } from "../redux/reduxhooks";
 import { useGetAxios } from "../utils/getaxios";
-import ProductNotFound from "../components/not-found";
 import LoadingScreen from "../components/loadingScreen";
 import SubjectNotFound from "../components/no-subjects";
+import { ENV } from "../utils/ENV";
+import axios from "axios";
 const Subjects = () => {
   const [newSubject, setNewSubject] = React.useState(false);
   const token = useAppSelector((state) => state.user.token)
   const [subjects, setSubjectData] = React.useState([]);
   const router = useRouter();
+  const createSubject = async () => {
+    if (!token || !newSubject) return;
+    try {
+      const response = await axios.post(`${ENV.BASE_URL}/api/subject/create`, { name: newSubject }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Subject created successfully:", response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error("Error creating subject:", error.response?.data || error.message);
+      throw error;
+    }
+  };
+
 
   const { data, error, loading } = useGetAxios('api/subject/loadSubjects');
 

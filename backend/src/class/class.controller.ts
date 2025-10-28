@@ -19,22 +19,31 @@ export class ClassController {
     this.bucketName = process.env.AWS_BUCKET_NAME;
   }
 
-
+  @UseGuards(JwtGuard)
   @Post('attendance')
-  @UseInterceptors(FileInterceptor('file'))
+  @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
   //@ts-ignore
-  async createAttendace(@UploadedFile() file: Express.Multer.File) {
+  async createAttendace(@UploadedFile() file: Express.Multer.File, @Req() req) {
     console.log("I AM FILE", file);
     if (!file.originalname.endsWith(".csv")) {
       throw new BadRequestException("Only CSV files are allowed to process");
 
     };
+    const userId = req.user?.sub;
+    if (!userId) {
+      throw new HttpException(
+        'Unauthorized: User ID not found in token',
+        HttpStatus.UNAUTHORIZED
+      )
+    }
 
 
     const response = await this.classService.processAttendance(file);
     console.log(response);
+    const attendace = await this.classService.createAttendance(userId, response);
 
-    return response;
+    return { sucess: true, status: "Created", code: HttpStatus.CREATED };
 
 
 

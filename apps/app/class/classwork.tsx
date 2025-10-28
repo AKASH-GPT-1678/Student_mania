@@ -6,6 +6,7 @@ import AssignmentForm from '../components/newclasswork';
 import { useSearchParams } from 'expo-router/build/hooks';
 
 import { useAppSelector } from '../redux/reduxhooks';
+import NoClassworkFound from '../components/noclasswork';
 
 const Classwork = () => {
   const [showForm, setShowForm] = React.useState(false);
@@ -16,7 +17,13 @@ const Classwork = () => {
   const { classData } = useAppSelector((state) => state.class);
 
 
-  if(form === 'true') return <AssignmentForm classIdd={classId as string} />
+  if (form === 'true') return <AssignmentForm classIdd={classId as string} />
+
+
+  if (!classData?.assignments || classData.assignments.length === 0) {
+    return <NoClassworkFound />;
+  }
+
 
 
 

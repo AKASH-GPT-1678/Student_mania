@@ -4,7 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } fro
 import axios from "axios";
 import { ENV } from "../utils/ENV";
 import { useAppSelector } from "../redux/reduxhooks";
-import { useSearchParams } from "expo-router/build/hooks";
+import { useLocalSearchParams, useSearchParams } from "expo-router/build/hooks";
 import SafeScreenWrapper from "../wrapper/safescreenwrapper";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from "expo-router";
@@ -16,8 +16,8 @@ const CreateAnnouncement = () => {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const token = useAppSelector((state) => state.user.token);
-  const searchParams = useSearchParams();
-  const classId = searchParams.get("classId");
+  const searchParams = useLocalSearchParams();
+  const classId = searchParams.classId;
 
   const handleSubmit = async () => {
     if (!classId) {
@@ -32,7 +32,8 @@ const CreateAnnouncement = () => {
     setLoading(true);
     try {
       const res = await axios.post(
-        `${ENV.BASE_URL}/api/announcement/${classId}`,
+        //announcement
+        `${ENV.BASE_URL}/api/class/announcement/${classId}`,
         { category, title, description },
         {
           headers: {
@@ -45,6 +46,7 @@ const CreateAnnouncement = () => {
       setCategory("");
       setTitle("");
       setDescription("");
+      console.log(res.data);
 
 
     } catch (err) {

@@ -81,10 +81,10 @@ const AttendanceForm = () => {
         formData.append('file', fileToUpload as any);
       }
 
-      console.log('Sending request to:', `${ENV.BASE_URL}/class/attendance`);
+      console.log('Sending request to:', `${ENV.BASE_URL}/api/class/attendance`);
 
       const response = await axios.post(
-        `${ENV.BASE_URL}/class/attendance`,
+        `${ENV.BASE_URL}/api/class/attendance`,
         formData,
         {
           headers: {

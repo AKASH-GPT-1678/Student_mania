@@ -104,7 +104,7 @@ const ClassWork = () => {
             onPress={() =>
               router.push({
                 pathname: '/class/newannouncement',
-                // params: { classId: data.id }
+                params: { classId: classData.id }
               })
             }
           >
