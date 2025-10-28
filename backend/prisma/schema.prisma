@@ -30,7 +30,7 @@ model User {
 
 model Attendance {
   id      String   @id @default(uuid())
-  date    DateTime 
+  date    DateTime
   lecture String
   day     String
   time    String
@@ -44,14 +44,37 @@ model Attendance {
 }
 
 model Subject {
-  id          Int      @id @default(autoincrement())
-  code        String   @unique @default(uuid())
+  id           Int           @id @default(autoincrement())
+  code         String        @unique @default(uuid())
+  name         String
+  description  String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  User         User?         @relation(fields: [userId], references: [id])
+  subjectTasks SubjectTask[]
+  userId       String?
+}
+
+model SubjectTask {
+  id          Int        @id @default(autoincrement())
   name        String
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  User        User?    @relation(fields: [userId], references: [id])
-  userId      String?
+  status      TaskStatus @default(PENDING)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relation with Subject
+  subject   Subject @relation(fields: [subjectId], references: [id])
+  subjectId Int
+}
+
+// Enum for task statuses
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  ON_HOLD
+  COMPLETED
+  CANCELLED
 }
 
 model Brand {

@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, NotFoundException } from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
-import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { JwtGuard } from 'src/jwt/jwt.guard';
 @Controller('api/subject')
 export class SubjectController {
@@ -17,7 +16,7 @@ export class SubjectController {
     if (!id) {
       throw new NotFoundException('User not found');
     }
-    return this.subjectService.create(data.name, id);
+    return this.subjectService.creates(data.name, id);
   };
 
   @UseGuards(JwtGuard)
